@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html><head lang="en"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>Measuring Engineering Productivity - Off By One</title><meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="Engineers love to measure things: latency, throughput, error rates. But try to measure their own work? Then metrics become the enemy.
+I get it. I&rsquo;ve seen enough terrible systems to understand the resistance. Most systems fail, thanks to Goodhart&rsquo;s Law. Measure the lines of code written, and people start writing verbose code. Measure the number of PRs, and people start dividing up their submissions.
+Yet, it all feels like you have to measure something. Every manager knows that some people are more productive than others. But even among the productive people, some are machines that churn out good stuff at a solid pace, while others are explosions; they seem to sit still for weeks and then burst out with amazing work. And of course, people have their natural ebb and flow; sometimes life just gets in the way. Yet, without a way to measure productivity and ascertain accountability, you are flying blind." />
+	<meta property="og:image" content=""/>
+	<meta property="og:url" content="http://localhost:1313/posts/measuring-engineering-productivity/">
+  <meta property="og:site_name" content="Off By One">
+  <meta property="og:title" content="Measuring Engineering Productivity">
+  <meta property="og:description" content="Engineers love to measure things: latency, throughput, error rates. But try to measure their own work? Then metrics become the enemy.
+I get it. I’ve seen enough terrible systems to understand the resistance. Most systems fail, thanks to Goodhart’s Law. Measure the lines of code written, and people start writing verbose code. Measure the number of PRs, and people start dividing up their submissions.
+Yet, it all feels like you have to measure something. Every manager knows that some people are more productive than others. But even among the productive people, some are machines that churn out good stuff at a solid pace, while others are explosions; they seem to sit still for weeks and then burst out with amazing work. And of course, people have their natural ebb and flow; sometimes life just gets in the way. Yet, without a way to measure productivity and ascertain accountability, you are flying blind.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-10-17T17:09:06-04:00">
+    <meta property="article:modified_time" content="2025-10-17T17:09:06-04:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Measuring Engineering Productivity">
+  <meta name="twitter:description" content="Engineers love to measure things: latency, throughput, error rates. But try to measure their own work? Then metrics become the enemy.
+I get it. I’ve seen enough terrible systems to understand the resistance. Most systems fail, thanks to Goodhart’s Law. Measure the lines of code written, and people start writing verbose code. Measure the number of PRs, and people start dividing up their submissions.
+Yet, it all feels like you have to measure something. Every manager knows that some people are more productive than others. But even among the productive people, some are machines that churn out good stuff at a solid pace, while others are explosions; they seem to sit still for weeks and then burst out with amazing work. And of course, people have their natural ebb and flow; sometimes life just gets in the way. Yet, without a way to measure productivity and ascertain accountability, you are flying blind.">
+
+        <link href="http://localhost:1313/css/fonts.2c2227b81b1970a03e760aa2e6121cd01f87c88586803cbb282aa224720a765f.css" rel="stylesheet">
+	
+
+	
+	<link rel="stylesheet" type="text/css" media="screen" href="http://localhost:1313/css/main.7a5c05040394322612a2d98397e9932aa81d9d7acc70199463e79f8180c8e0c0.css" />
+</head>
+<body>
+        <div class="content"><header>
+	<div class="main">
+		<a href="http://localhost:1313/">Off By One</a>
+	</div>
+	<nav>
+		
+		
+	</nav>
+</header>
+
+<main>
+  <article>
+    <div class="post-container">
+      
+      <div class="post-content">
+        <div class="title">
+          <h1 class="title">Measuring Engineering Productivity</h1>
+          <div class="meta">Posted on Oct 17, 2025</div>
+        </div>
+        
+        <section class="body">
+          <p>Engineers love to measure things: latency, throughput, error rates. But try to measure their own work? Then metrics become the enemy.</p>
+<p>I get it. I&rsquo;ve seen enough terrible systems to understand the resistance. Most systems fail, thanks to Goodhart&rsquo;s Law. Measure the lines of code written, and people start writing verbose code. Measure the number of PRs, and people start dividing up their submissions.</p>
+<p>Yet, it all feels like you have to measure <em>something</em>. Every manager knows that some people are more productive than others. But even among the productive people, some are machines that churn out good stuff at a solid pace, while others are explosions; they seem to sit still for weeks and then burst out with amazing work. And of course, people have their natural ebb and flow; sometimes life just gets in the way. Yet, without a way to measure productivity and ascertain accountability, you are flying blind.</p>
+<p>People repeatedly asked me how we measured productivity at Felt. Over the course of 4.5 years, I arrived at a system that seemed to work. It&rsquo;s what worked for us; it encouraged and motivated the team to release products at an incredible pace. It allowed me to see where everyone stood and helped make adjustments where needed.</p>
+<h2 id="why-measure-things">Why Measure Things?</h2>
+<p>Here&rsquo;s the uncomfortable truth: you can measure engineering productivity. The goal is not to have a purely objective system where you stack rank people but rather to make it obvious to everyone, including the people being measured, the level of their output, especially compared to people around them.</p>
+<p>Yes, outcomes matter most. We all want to ship features that users love, fix bugs that matter, and build systems that scale. <strong>But outcomes are often a function of output</strong>. You can&rsquo;t improve what you can&rsquo;t see, and you can&rsquo;t see what you don&rsquo;t measure.</p>
+<h2 id="the-north-star-principle-dont-burden-your-engineers">The North Star Principle: Don&rsquo;t Burden Your Engineers</h2>
+<p>The most important principle that guided everything: the bulk of the &ldquo;paperwork&rdquo; should fall on management, not individual contributors. Of course, it&rsquo;s important to keep the busywork to a minimum for productivity&rsquo;s sake. But more importantly, if you want a system that people won&rsquo;t try to game, overtly or covertly, you want a system people won&rsquo;t hate.</p>
+<h2 id="the-system">The System</h2>
+<table>
+  <thead>
+      <tr>
+          <th>Practice</th>
+          <th>Frequency</th>
+          <th>Engineer Overhead</th>
+          <th>What It Measures</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Standup Messages in Slack</td>
+          <td>Daily</td>
+          <td>5-10 min</td>
+          <td>Day-to-day progress and blockers</td>
+      </tr>
+      <tr>
+          <td>GitHub Changelogs</td>
+          <td>Weekly</td>
+          <td>None</td>
+          <td>Volume and type of work shipped</td>
+      </tr>
+      <tr>
+          <td>Manager 1:1s</td>
+          <td>Weekly</td>
+          <td>None</td>
+          <td>Context and patterns over time</td>
+      </tr>
+      <tr>
+          <td>All-Hands Presentations</td>
+          <td>Weekly</td>
+          <td>~10 min</td>
+          <td>Team accomplishments</td>
+      </tr>
+      <tr>
+          <td>PR Notifications</td>
+          <td>Real-time</td>
+          <td>None</td>
+          <td>Ambient awareness</td>
+      </tr>
+      <tr>
+          <td>Deploy Verifications</td>
+          <td>Per deploy</td>
+          <td>2-5 min</td>
+          <td>Ownership and quality</td>
+      </tr>
+  </tbody>
+</table>
+<h3 id="daily">Daily</h3>
+<p>We did not have daily standups. However, every engineer was required to post a message in a dedicated Slack channel (called #standups) with three things:</p>
+<ol>
+<li>What I did yesterday</li>
+<li>What I plan to do today</li>
+<li>Any blockers.</li>
+</ol>
+<p>That&rsquo;s it. It took every engineer around 5-10 minutes to do this per day.</p>
+<p>The engineers were asked to be as succinct as possible. A good standup message (more on this later) would include links to GitHub PRs or Linear issues. Often, most engineers didn&rsquo;t have any blockers. The key is that we asked managers to actually keep tabs on these messages and notify their reports if they missed posting a message.</p>
+<h2 id="weekly-the-three-layers">Weekly: The Three Layers</h2>
+<h3 id="automated-mostly-github-changelogs">Automated (Mostly) GitHub Changelogs</h3>
+<p>At the end of every week (generally Friday), we compiled a changelog using GitHub&rsquo;s built-in Release tool. This release wasn&rsquo;t particularly meaningful since we built a SaaS product that was continuously deployed, but the Changelog was.</p>
+<p>Since the Changelog included every engineer&rsquo;s GitHub username next to the merged PR, it allowed a very quick visual reference to see how many changes from each engineer went in at a given week.</p>
+<p>We also categorized the PRs in the changelog (manually, since it predated ChatGPT) into sections such as &ldquo;Features&rdquo;, &ldquo;Bug Fixes&rdquo;, and &ldquo;Dev Ex&rdquo;. This was important because it allowed us to see who was working on what kind of things. Most engineers love to spend time on their tooling, and that&rsquo;s important for both productivity and personal reasons. But we wanted to make sure people weren&rsquo;t spending all their time on them.</p>
+<h3 id="manager-11s">Manager 1:1s</h3>
+<p>Every individual contributor (and really, every employee, including myself) had a weekly 1:1 with their manager. While this meeting was mostly <em>not about</em> their work, it was a part of it. A good 1:1 format I&rsquo;ve used is the &ldquo;People, Product, Process&rdquo;.</p>
+<p>I often started with the &ldquo;Product&rdquo; by asking &ldquo;What have you been working on?&rdquo; The key was to make sure it was me, the manager, taking notes. I used a shared Notion document that had an H2 headline for each week and H3 headlines for each item of the &ldquo;People, Product, Process&rdquo; trifecta.</p>
+<p>This way, it was very easy for me to see what people said they were working on week over week: all I had to do was open up a few weeks&rsquo; worth of H2s and compare the &ldquo;Product&rdquo; sections under each. Since this Notion doc was shared with my report and I took notes as we spoke, there was no debate.</p>
+<p>This also captured context that doesn&rsquo;t show up in commits. Why did you spend three days refactoring that module? What made you decide to investigate that performance issue? What&rsquo;s blocking you from finishing that feature?</p>
+<p>Again, this &ldquo;Product&rdquo; section often was the smallest part of a 1:1 — not more than 10, 15 minutes of a 45-minute meeting. It&rsquo;s also why I often did this part first.</p>
+<h3 id="company-all-hands">Company All-Hands</h3>
+<p>Every week, we had a company All-Hands for around an hour. A 15-minute section of that meeting was set aside for each team in the company to present their work from the past week.</p>
+<p>At the beginning of each All-Hands, teams would break out into their own rooms and would have 7-8 minutes to put together a quick presentation (using our own tool) to paste in screenshots, graphics, or whatever they thought was useful and pick a speaker.</p>
+<p>Later, when the entire team got together, the designated speaker had 2-3 minutes to go through their team&rsquo;s work in front of the whole company.</p>
+<p>This format not only allowed cross-team awareness, but also created artifacts we, the management, could go through week over week. It also created visibility through accountability. When you know you&rsquo;ll be presenting your work to the company, you ship things you&rsquo;re proud of.</p>
+<h2 id="real-time">Real-Time</h2>
+<h3 id="first-pr-notifications">First: PR Notifications</h3>
+<p>We piped all the merged GitHub PRs into a public Slack channel. This wasn&rsquo;t always useful and after a few more engineers joined, it became more &ldquo;watching the Matrix&rdquo; than anything.</p>
+<p>While we never really used this as evidence of anything, it created an ambient sense of what was going on.</p>
+<h3 id="later-deploy-verifications">Later: Deploy Verifications</h3>
+<p>Over time, the above system got quite advanced. We developed a sophisticated system where every single approved (and tested) PR would get deployed immediately. In lieu of a staging environment, we had preview environments and engineers loved the ability to get their code out into production without fanfare.</p>
+<p>However, in order to make sure things actually worked as designed (and because we started having bugs), we required our engineers to verify their PRs in production.</p>
+<p>Again, we automated almost all of this — after each deploy, we&rsquo;d create a new Slack message in a designated room and tag the person (in Slack) whose PR just got deployed. All the engineers had to do was verify their PR (by posting a message under that thread on how they verified it) and add a ✅ emoji.</p>
+<p>Similar to the PR notifications, this system wasn&rsquo;t used as evidence as much as it created a culture of high-cadence. It became very obvious how many deploys were going out and whose PRs were in them, which became motivating for most people.</p>
+<h2 id="overview">Overview</h2>
+<p>As you saw, while there were many parts to this system, it required practically zero overhead from individual contributors.</p>
+<p>Aside from people writing their standup messages, the work was either done by management or things engineers should have been doing anyway as part of a continuous delivery cycle.</p>
+<h2 id="implementation-notes">Implementation Notes</h2>
+<p>Before you go out and implement this system at your company, it behooves me to share some thoughts. I hope what I&rsquo;m going to share here is obvious to most people, but well, more on that in a second.</p>
+<h3 id="take-your-time">Take your time</h3>
+<p>Most of what you&rsquo;ve read came together over the course of 2 years. We did not start with 18 engineers divided across 3 teams. The first incarnation was simply the standup messages and the real-time deploy messages on Slack. Soon, we added our All-Hands presentations. The rest came in as we needed them.</p>
+<p>If you tried to implement all of this at once, you&rsquo;d get a mutiny and your engineers would be right. Start with one or two. It will feel annoying for a bit. Power through it, and if it works, consider the rest.</p>
+<h3 id="context-matters-enormously">Context Matters Enormously</h3>
+<p>Needless to say, this system worked for my company as we grew from 2 to 25 people. We were divided into 2 or 3 teams and mostly worked in the same timezone remotely. We built a SaaS product that was delivered continuously, sometimes even doing 25 deploys a day.</p>
+<p>Don&rsquo;t cargo-cult this system. Understand the principles—minimal engineer overhead, maximum visibility, automation over process—and adapt them to your context.</p>
+<h3 id="be-extremely-explicit-in-your-expectations">Be extremely explicit in your expectations.</h3>
+<p>When we introduced daily standups, we didn&rsquo;t just say &ldquo;post what you&rsquo;re working on.&rdquo; We provided examples. Literal examples of good and bad standup messages.</p>
+<p>Good standup message: &ldquo;Yesterday: Finished the OAuth integration, all tests passing. Today: Starting on the password reset flow. Blockers: Need design feedback on the reset email template.&rdquo;</p>
+<p>Bad standup message: &ldquo;Working on auth stuff.&rdquo;</p>
+<p>Same thing for changelogs. Same thing for All-Hands presentations. We showed people exactly what we wanted to see.</p>
+<p>Be more explicit than you think you need to be. What seems obvious to you is not obvious to everyone. Provide examples. Provide templates. Show, don&rsquo;t just tell.</p>
+<h3 id="be-open-to-feedback">Be open to feedback</h3>
+<p>As I mentioned, one-third of my 1:1s was about &ldquo;Process&rdquo;. I always directly asked people &ldquo;Anything we can be doing to make you more productive or happier?&rdquo;. This is where people often shared their dislikes about some of what I just talked about.</p>
+<p>Similarly, as part of our regular &ldquo;Engineering All-Hands&rdquo; (which we held every 2-3 weeks), we often had a &ldquo;Tools and Processes Retro&rdquo; every few months. This was another place where people could express their thoughts.</p>
+<p>That is not to say we always did what everyone asked for. Posting daily standup messages was often unpopular, but it was required for a remote team. The deploy verifications were another common pain point (due to deploys sometimes getting delayed behind other deploys) so we relaxed the requirements to check them daily versus &ldquo;immediately after deploys&rdquo;.</p>
+<h3 id="its-not-about-the-numbers-but-numbers-matter">It&rsquo;s not about the numbers, but numbers matter</h3>
+<p>I opened this talking about measurement, but you&rsquo;ll notice that the system wasn&rsquo;t about the numbers as much as creating a culture of cadence and high-performance output which resulted in quick outcomes.</p>
+<p>At the same time, we did sometimes measure things — often as a way to verify our intuitions and assumptions. Whenever we felt like someone was falling behind, we quickly gathered their recent contributions from various artifacts and calibrated against their teammates. We didn&rsquo;t do anything anyone else couldn&rsquo;t have done for themselves.</p>
+<p>There were times when we were right but also times when the numbers told us that someone was working on something really complicated — there were a lot of PRs but not a lot of deploys. That was our hint that we didn&rsquo;t scope the project correctly.</p>
+<p>And yes, there were also times the numbers told us that someone was falling behind. Since we used practically all public numbers, that made a hard conversation about performance at least slightly easier by grounding things in reality versus feelings.</p>
+<h2 id="measurement-as-a-tool-not-a-weapon">Measurement as a Tool, Not a Weapon</h2>
+<p>Here&rsquo;s what I want you to take away from this: measurement isn&rsquo;t the enemy. Bad measurement is the enemy.</p>
+<p>When you measure the wrong things—lines of code, number of commits, hours logged—you create dysfunction. When you burden engineers with measurement overhead, you not only reduce productivity instead of improving it, but also create enemies. When you use metrics as a weapon to punish people, you destroy trust.</p>
+<p>But when you measure thoughtfully, with respect for people&rsquo;s time and a focus on visibility rather than control, measurement becomes valuable. It helps you see what&rsquo;s actually happening. It helps you identify problems early. It helps you understand patterns and improve over time. It helps you, as well as the people being measured.</p>
+<p>The system should work for your engineers, not against them. If your measurement system makes engineers less productive, you&rsquo;ve failed. If it makes them feel surveilled and distrusted, you&rsquo;ve failed. If it becomes an end in itself rather than a means to building better products, you&rsquo;ve failed.</p>
+<p>Build a system that gives you visibility while letting engineers focus on what they do best: engineering. That&rsquo;s the goal. Everything else is details.</p>
+
+        </section>
+        <div class="post-tags">
+          
+          
+          
+        </div>
+      </div>
+
+      
+      
+    </div>
+
+    </article>
+</main>
+<footer>
+  <div style="display:flex"></div>
+  <div class="footer-info">
+    2025  <a
+      href="https://github.com/athul/archie">Archie Theme</a> | Built with <a href="https://gohugo.io">Hugo</a>
+  </div>
+</footer>
+
+</div>
+    </body>
+</html>
