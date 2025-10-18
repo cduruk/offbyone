@@ -2,6 +2,7 @@
 date = '2025-10-17T17:09:06-04:00'
 draft = false
 title = 'Measuring Engineering Productivity'
+description = 'A practical system for tracking engineering output without burying teams in metrics.'
 +++
 
 Engineers love to measure things: latency, throughput, error rates. But try to measure their own work? Then metrics become the enemy.
