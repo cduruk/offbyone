@@ -56,7 +56,20 @@ const socialLinks: SocialLink[] = [
             )
           }
         </div>
-        <p class="text-muted-foreground text-sm">{bio}</p>
+        <p class="text-muted-foreground text-sm">
+          {bio}
+          {
+            about && (
+              <>
+                {' '}
+                <Link href={about} underline>
+                  See more info here
+                </Link>
+                .
+              </>
+            )
+          }
+        </p>
       </div>
       <SocialIcons links={socialLinks} />
     </div>
