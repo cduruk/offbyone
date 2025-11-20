@@ -11,12 +11,13 @@ interface Props {
 }
 
 const { author } = Astro.props
-const { name, avatar, bio, pronouns } = author.data
+const { name, avatar, bio, pronouns, about } = author.data
 const currentPath = Astro.url.pathname
 const authorPath = ensureTrailingSlash(`/authors/${author.id}`)
 const isAuthorPage = currentPath === authorPath
 
 const socialLinks: SocialLink[] = [
+  about && { href: about, label: 'About', external: false },
   author.data.website && { href: author.data.website, label: 'Website' },
   author.data.github && { href: author.data.github, label: 'GitHub' },
   author.data.twitter && { href: author.data.twitter, label: 'Twitter' },

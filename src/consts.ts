@@ -54,6 +54,7 @@ export const SOCIAL_LINKS: SocialLink[] = [
 ]
 
 export const ICON_MAP: IconMap = {
+  About: 'lucide:info',
   Website: 'lucide:globe',
   GitHub: 'lucide:github',
   LinkedIn: 'lucide:linkedin',
