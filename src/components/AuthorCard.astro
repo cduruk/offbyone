@@ -58,12 +58,13 @@ const socialLinks: SocialLink[] = [
         </div>
         <p class="text-muted-foreground text-sm">
           {bio}
+          {bio && !bio.trim().endsWith('.') ? '.' : ''}
           {
             about && (
               <>
                 {' '}
                 <Link href={about} underline>
-                  See more info here
+                  See more here
                 </Link>
                 .
               </>
