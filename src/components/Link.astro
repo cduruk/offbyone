@@ -20,8 +20,7 @@ const normalizedHref = external ? href : ensureTrailingSlash(href)
   target={external ? '_blank' : '_self'}
   class={cn(
     'inline-block transition-colors duration-300 ease-in-out',
-    underline &&
-      'underline decoration-muted-foreground underline-offset-[3px] hover:decoration-foreground',
+    underline && 'link-accent',
     className,
   )}
   {...rest}

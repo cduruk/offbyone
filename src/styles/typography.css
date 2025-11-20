@@ -92,28 +92,6 @@
       @apply text-primary;
     }
 
-    :where(a):not(:where(.not-prose, .not-prose *)) {
-      @apply text-primary decoration-primary/30 hover:decoration-primary dark:hover:decoration-primary font-medium break-words underline underline-offset-[3px] transition-colors dark:text-[var(--highlight)] dark:decoration-[var(--highlight)]/30;
-    }
-
-    :where(a):not(:where(.not-prose, .not-prose *)):hover,
-    :where(a):not(:where(.not-prose, .not-prose *)):focus-visible {
-      color: var(--highlight);
-      text-decoration-color: var(--highlight);
-    }
-
-    :where(a):not(:where(.not-prose, .not-prose *)):hover:where(
-        [data-theme='dark'],
-        [data-theme='dark'] *
-      ),
-    :where(a):not(:where(.not-prose, .not-prose *)):focus-visible:where(
-        [data-theme='dark'],
-        [data-theme='dark'] *
-      ) {
-      color: var(--primary);
-      text-decoration-color: var(--primary);
-    }
-
     :where(strong):not(:where(.not-prose, .not-prose *)) {
       @apply text-foreground font-medium;
     }
@@ -191,6 +169,33 @@
     :where(.katex-display):not(:where(.not-prose, .not-prose *)) {
       @apply text-foreground/80 my-6 overflow-x-auto overflow-y-hidden py-2 tracking-normal;
     }
+  }
+
+  :where(.prose :where(a):not(:where(.not-prose, .not-prose *))),
+  a.link-accent {
+    @apply text-primary decoration-primary/30 hover:decoration-primary dark:hover:decoration-primary font-medium break-words underline underline-offset-[3px] transition-colors dark:text-[var(--highlight)] dark:decoration-[var(--highlight)]/30;
+  }
+
+  :where(.prose :where(a):not(:where(.not-prose, .not-prose *))):hover,
+  :where(.prose :where(a):not(:where(.not-prose, .not-prose *))):focus-visible,
+  a.link-accent:hover,
+  a.link-accent:focus-visible {
+    color: var(--highlight);
+    text-decoration-color: var(--highlight);
+  }
+
+  :where(.prose :where(a):not(:where(.not-prose, .not-prose *))):hover:where(
+      [data-theme='dark'],
+      [data-theme='dark'] *
+    ),
+  :where(.prose :where(a):not(:where(.not-prose, .not-prose *))):focus-visible:where(
+      [data-theme='dark'],
+      [data-theme='dark'] *
+    ),
+  a.link-accent:hover:where([data-theme='dark'], [data-theme='dark'] *),
+  a.link-accent:focus-visible:where([data-theme='dark'], [data-theme='dark'] *) {
+    color: var(--primary);
+    text-decoration-color: var(--primary);
   }
 }
 
