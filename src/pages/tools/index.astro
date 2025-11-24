@@ -1,0 +1,96 @@
+---
+import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import PageHead from '@/components/PageHead.astro'
+import Layout from '@/layouts/Layout.astro'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+---
+
+<Layout class="max-w-5xl">
+  <PageHead
+    slot="head"
+    title="Tools"
+    description="Interactive tools and calculators for understanding interruptions, hiring pipelines, and productivity."
+    ogImage="/static/og/about.png"
+  />
+  <Breadcrumbs
+    items={[{ label: 'Tools', icon: 'lucide:wrench' }]}
+  />
+
+  <section>
+    <div class="min-w-full">
+      <div class="prose mb-8">
+        <h1>Interactive Tools</h1>
+        <p>
+          A collection of interactive tools and calculators to help you make
+          better decisions about productivity, hiring, and team management.
+        </p>
+      </div>
+
+      <div class="grid gap-6 md:grid-cols-2">
+        <!-- Interruptions Simulator -->
+        <a href="/tools/interruptions/" class="group block">
+          <Card className="h-full transition-all hover:border-primary hover:shadow-lg">
+            <CardHeader>
+              <CardTitle className="group-hover:text-primary">Interruptions Simulator</CardTitle>
+              <CardDescription>
+                Visualize how random interruptions fragment deep work and destroy productivity
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p class="text-sm text-muted-foreground">
+                Interactive simulations showing the impact of interruptions across 100 workdays,
+                with parameter space exploration and detailed timeline views.
+              </p>
+              <ul class="mt-4 space-y-2 text-sm">
+                <li class="flex items-start gap-2">
+                  <span class="text-primary">→</span>
+                  <span>100-day simulation with Poisson distribution</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-primary">→</span>
+                  <span>Six persona presets (Deep Work to Executive)</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-primary">→</span>
+                  <span>Parameter space heatmap visualization</span>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
+        </a>
+
+        <!-- Hiring Pipeline Calculator -->
+        <a href="/tools/hiring-pipeline/" class="group block">
+          <Card className="h-full transition-all hover:border-primary hover:shadow-lg">
+            <CardHeader>
+              <CardTitle className="group-hover:text-primary">Hiring Pipeline Calculator</CardTitle>
+              <CardDescription>
+                Calculate how many candidates you need to reach out to make one hire
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p class="text-sm text-muted-foreground">
+                Work backwards from your hiring goal to understand the scale of outreach
+                required at each stage of your recruitment funnel.
+              </p>
+              <ul class="mt-4 space-y-2 text-sm">
+                <li class="flex items-start gap-2">
+                  <span class="text-primary">→</span>
+                  <span>Customizable conversion rates per stage</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-primary">→</span>
+                  <span>Timeline-based weekly outreach targets</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-primary">→</span>
+                  <span>Shareable scenarios with URL parameters</span>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>

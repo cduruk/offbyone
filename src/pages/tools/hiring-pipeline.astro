@@ -1,0 +1,89 @@
+---
+import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import PageHead from '@/components/PageHead.astro'
+import Layout from '@/layouts/Layout.astro'
+import PipelineCalculator from '@/components/hiring-pipeline/PipelineCalculator'
+---
+
+<Layout class="max-w-5xl">
+  <PageHead
+    slot="head"
+    title="Hiring Pipeline Calculator"
+    description="Calculate how many candidates you need to reach out to make one hire based on your conversion rates."
+    ogImage="/static/og/about.png"
+  />
+  <Breadcrumbs
+    items={[
+      { href: '/tools/', label: 'Tools', icon: 'lucide:wrench' },
+      { label: 'Hiring Pipeline Calculator', icon: 'lucide:users' }
+    ]}
+  />
+
+  <section>
+    <div class="min-w-full">
+      <div class="prose mb-8">
+        <h1>Hiring Pipeline Calculator</h1>
+        <p>
+          Building a hiring pipeline is one of the most critical aspects of
+          growing a team. But how many candidates do you actually need to reach
+          out to in order to make one hire?
+        </p>
+        <p>
+          This calculator works <strong>backwards from one hire</strong>,
+          calculating how many candidates you need at each stage based on your
+          conversion rates.
+        </p>
+      </div>
+
+      <!-- Calculator -->
+      <div class="not-prose w-full bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
+        <div class="p-6">
+          <PipelineCalculator client:load />
+        </div>
+      </div>
+
+      <!-- Instructions -->
+      <div class="prose mt-12">
+        <h2>How to Use</h2>
+        <h3>Adjust the Rates</h3>
+        <ul>
+          <li>
+            Edit the percentage fields under "Rate" for each pipeline stage
+          </li>
+          <li>
+            Each rate represents the percentage of candidates who move to the
+            next stage
+          </li>
+          <li>
+            For example, if 4% of your outreach gets a response, enter 4 in the
+            Response/Interest rate field
+          </li>
+        </ul>
+
+        <h3>Set Your Timeline</h3>
+        <ul>
+          <li>
+            Enter your target "Weeks to Hire" - this is how soon you need a
+            hire
+          </li>
+          <li>
+            The calculator shows how many candidates you need to reach out to
+            per week
+          </li>
+        </ul>
+
+        <h3>Share Your Scenario</h3>
+        <ul>
+          <li>
+            Click "Copy Share Link" to get a shareable URL with all your
+            settings
+          </li>
+          <li>
+            Share your specific hiring scenario with colleagues or save it for
+            later
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</Layout>

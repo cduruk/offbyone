@@ -1,0 +1,74 @@
+---
+import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import PageHead from '@/components/PageHead.astro'
+import Layout from '@/layouts/Layout.astro'
+import { PoissonInterruptionsGrid } from '@/components/poisson-interrupt/PoissonInterruptionsGrid'
+---
+
+<Layout class="max-w-5xl">
+  <PageHead
+    slot="head"
+    title="Interruptions Simulator"
+    description="Interactive visualizations showing how random interruptions fragment deep work and destroy productivity."
+    ogImage="/static/og/about.png"
+  />
+  <Breadcrumbs
+    items={[
+      { href: '/tools/', label: 'Tools', icon: 'lucide:wrench' },
+      { label: 'Interruptions Simulator', icon: 'lucide:activity' }
+    ]}
+  />
+
+  <section>
+    <div class="min-w-full">
+      <div class="prose mb-8">
+        <h1>The Fragmentation of Time</h1>
+        <p>
+          This interactive tool visualizes how random interruptions destroy deep
+          work capacity. Using Poisson distribution to model interruptions and
+          recovery time, we can see the real impact on productivity over
+          simulated workdays.
+        </p>
+        <p>
+          Adjust the parameters below to simulate different work environments
+          and see how interruptions affect your ability to achieve deep work.
+        </p>
+      </div>
+
+      <!-- Full Interactive App -->
+      <div class="not-prose w-full bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
+        <PoissonInterruptionsGrid client:load />
+      </div>
+
+      <!-- Parameter Guide -->
+      <div class="prose mt-12">
+        <h2>Understanding the Parameters</h2>
+        <ul>
+          <li>
+            <strong>λ (Lambda)</strong>: Interruptions per hour. Higher values
+            mean more frequent interruptions.
+          </li>
+          <li>
+            <strong>δ (Delta)</strong>: Recovery time in minutes after each
+            interruption. Time needed to regain focus.
+          </li>
+          <li>
+            <strong>Threshold</strong>: Minimum continuous time (30, 45, or 60
+            minutes) needed for a "qualifying" focus block.
+          </li>
+          <li>
+            <strong>Target</strong>: How many qualifying blocks you need per
+            day to consider it a "good day".
+          </li>
+        </ul>
+        <h3>Example Personas</h3>
+        <ul>
+          <li><strong>Deep Work</strong>: λ = 0.4/hr, δ = 11min</li>
+          <li><strong>Maker Schedule</strong>: λ = 1.0/hr, δ = 11min</li>
+          <li><strong>Manager Schedule</strong>: λ = 2.2/hr, δ = 11min</li>
+          <li><strong>Executive Schedule</strong>: λ = 3.0/hr, δ = 11min</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</Layout>
