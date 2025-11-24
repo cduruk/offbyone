@@ -160,129 +160,129 @@ export function FocusBlocksHeatmapEmbed({
       )}
 
       <div className="overflow-x-auto">
-          <svg
-            width={svgWidth}
-            height={svgHeight}
-            viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-            className="h-auto max-w-full"
+        <svg
+          width={svgWidth}
+          height={svgHeight}
+          viewBox={`0 0 ${svgWidth} ${svgHeight}`}
+          className="h-auto max-w-full"
+        >
+          {/* X-axis label */}
+          <text
+            x={paddingLeft + (lambdaValues.length * cellSize) / 2}
+            y={svgHeight - 5}
+            textAnchor="middle"
+            fontSize="12"
+            fill="#555"
           >
-            {/* X-axis label */}
-            <text
-              x={paddingLeft + (lambdaValues.length * cellSize) / 2}
-              y={svgHeight - 5}
-              textAnchor="middle"
-              fontSize="12"
-              fill="#555"
-            >
-              Interruptions per hour (λ)
-            </text>
+            Interruptions per hour (λ)
+          </text>
 
-            {/* Y-axis label */}
-            <text
-              x={15}
-              y={paddingTop + (deltaValues.length * cellSize) / 2}
-              textAnchor="middle"
-              fontSize="12"
-              fill="#555"
-              transform={`rotate(-90 15 ${
-                paddingTop + (deltaValues.length * cellSize) / 2
-              })`}
-            >
-              Recovery time Δ (minutes)
-            </text>
+          {/* Y-axis label */}
+          <text
+            x={15}
+            y={paddingTop + (deltaValues.length * cellSize) / 2}
+            textAnchor="middle"
+            fontSize="12"
+            fill="#555"
+            transform={`rotate(-90 15 ${
+              paddingTop + (deltaValues.length * cellSize) / 2
+            })`}
+          >
+            Recovery time Δ (minutes)
+          </text>
 
-            {/* X-axis tick labels - reversed to match data order */}
-            {[...lambdaValues].reverse().map((lambda, idx) => {
-              const x = paddingLeft + idx * cellSize + cellSize / 2
+          {/* X-axis tick labels - reversed to match data order */}
+          {[...lambdaValues].reverse().map((lambda, idx) => {
+            const x = paddingLeft + idx * cellSize + cellSize / 2
+            return (
+              <text
+                key={`lx-${idx}`}
+                x={x}
+                y={svgHeight - paddingBottom + 12}
+                textAnchor="middle"
+                fontSize="11"
+                fill="#777"
+              >
+                {lambda.toFixed(1)}
+              </text>
+            )
+          })}
+
+          {/* Y-axis tick labels */}
+          {deltaValues.map((delta, idx) => {
+            const y = paddingTop + idx * cellSize + cellSize / 2 + 3
+            return (
+              <text
+                key={`dy-${idx}`}
+                x={paddingLeft - 6}
+                y={y}
+                textAnchor="end"
+                fontSize="11"
+                fill="#777"
+              >
+                {delta.toFixed(0)}
+              </text>
+            )
+          })}
+
+          {/* Heatmap cells */}
+          {grid.map((row, rowIdx) =>
+            row.map((cell, colIdx) => {
+              const x = paddingLeft + colIdx * cellSize
+              const y = paddingTop + rowIdx * cellSize
+              const color = colorForValue(cell.expectedBlocks, maxValue)
+              const isHovered =
+                hovered &&
+                hovered.lambda === cell.lambda &&
+                hovered.delta === cell.delta
+              const isHighlighted = isCellHighlighted(cell.lambda, cell.delta)
+              const textValue = cell.expectedBlocks.toFixed(1)
+              // Determine text color based on background lightness
+              const t =
+                maxValue === 0
+                  ? 0
+                  : Math.min(cell.expectedBlocks, maxValue) / maxValue
+              const textColor = t > 0.5 ? '#fff' : '#333'
+
+              // Determine stroke color and width based on state
+              const strokeColor = isHighlighted
+                ? '#ef4444'
+                : isHovered
+                  ? '#222'
+                  : 'rgba(0,0,0,0.06)'
+              const strokeWidth = isHighlighted ? 2.5 : isHovered ? 1.4 : 0.5
+
               return (
-                <text
-                  key={`lx-${idx}`}
-                  x={x}
-                  y={svgHeight - paddingBottom + 12}
-                  textAnchor="middle"
-                  fontSize="11"
-                  fill="#777"
-                >
-                  {lambda.toFixed(1)}
-                </text>
+                <g key={`c-${rowIdx}-${colIdx}`}>
+                  <rect
+                    x={x}
+                    y={y}
+                    width={cellSize - 1}
+                    height={cellSize - 1}
+                    fill={color}
+                    stroke={strokeColor}
+                    strokeWidth={strokeWidth}
+                    onMouseEnter={() => setHovered(cell)}
+                    onMouseLeave={() => setHovered(null)}
+                    className="cursor-pointer transition-all"
+                  />
+                  <text
+                    x={x + cellSize / 2}
+                    y={y + cellSize / 2 + 3}
+                    textAnchor="middle"
+                    fontSize="10"
+                    fill={textColor}
+                    fontWeight="500"
+                    pointerEvents="none"
+                  >
+                    {textValue}
+                  </text>
+                </g>
               )
-            })}
-
-            {/* Y-axis tick labels */}
-            {deltaValues.map((delta, idx) => {
-              const y = paddingTop + idx * cellSize + cellSize / 2 + 3
-              return (
-                <text
-                  key={`dy-${idx}`}
-                  x={paddingLeft - 6}
-                  y={y}
-                  textAnchor="end"
-                  fontSize="11"
-                  fill="#777"
-                >
-                  {delta.toFixed(0)}
-                </text>
-              )
-            })}
-
-            {/* Heatmap cells */}
-            {grid.map((row, rowIdx) =>
-              row.map((cell, colIdx) => {
-                const x = paddingLeft + colIdx * cellSize
-                const y = paddingTop + rowIdx * cellSize
-                const color = colorForValue(cell.expectedBlocks, maxValue)
-                const isHovered =
-                  hovered &&
-                  hovered.lambda === cell.lambda &&
-                  hovered.delta === cell.delta
-                const isHighlighted = isCellHighlighted(cell.lambda, cell.delta)
-                const textValue = cell.expectedBlocks.toFixed(1)
-                // Determine text color based on background lightness
-                const t =
-                  maxValue === 0
-                    ? 0
-                    : Math.min(cell.expectedBlocks, maxValue) / maxValue
-                const textColor = t > 0.5 ? '#fff' : '#333'
-
-                // Determine stroke color and width based on state
-                const strokeColor = isHighlighted
-                  ? '#ef4444'
-                  : isHovered
-                    ? '#222'
-                    : 'rgba(0,0,0,0.06)'
-                const strokeWidth = isHighlighted ? 2.5 : isHovered ? 1.4 : 0.5
-
-                return (
-                  <g key={`c-${rowIdx}-${colIdx}`}>
-                    <rect
-                      x={x}
-                      y={y}
-                      width={cellSize - 1}
-                      height={cellSize - 1}
-                      fill={color}
-                      stroke={strokeColor}
-                      strokeWidth={strokeWidth}
-                      onMouseEnter={() => setHovered(cell)}
-                      onMouseLeave={() => setHovered(null)}
-                      className="cursor-pointer transition-all"
-                    />
-                    <text
-                      x={x + cellSize / 2}
-                      y={y + cellSize / 2 + 3}
-                      textAnchor="middle"
-                      fontSize="10"
-                      fill={textColor}
-                      fontWeight="500"
-                      pointerEvents="none"
-                    >
-                      {textValue}
-                    </text>
-                  </g>
-                )
-              }),
-            )}
-          </svg>
-        </div>
+            }),
+          )}
+        </svg>
+      </div>
     </div>
   )
 }

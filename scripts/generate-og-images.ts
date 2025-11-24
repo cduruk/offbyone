@@ -575,7 +575,11 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
 
   if (options.help) {
     printUsage()
-  } else if (!options.includePosts && !options.includeStatic && options.slugs.length === 0) {
+  } else if (
+    !options.includePosts &&
+    !options.includeStatic &&
+    options.slugs.length === 0
+  ) {
     console.error('Nothing to do. Specify --slug or enable posts/static tasks.')
     process.exitCode = 1
   } else {

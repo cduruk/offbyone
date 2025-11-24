@@ -1,8 +1,8 @@
 ---
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import PipelineCalculator from '@/components/hiring-pipeline/PipelineCalculator'
 import PageHead from '@/components/PageHead.astro'
 import Layout from '@/layouts/Layout.astro'
-import PipelineCalculator from '@/components/hiring-pipeline/PipelineCalculator'
 ---
 
 <Layout class="max-w-5xl">
@@ -15,7 +15,7 @@ import PipelineCalculator from '@/components/hiring-pipeline/PipelineCalculator'
   <Breadcrumbs
     items={[
       { href: '/tools/', label: 'Tools', icon: 'lucide:wrench' },
-      { label: 'Hiring Pipeline Calculator', icon: 'lucide:users' }
+      { label: 'Hiring Pipeline Calculator', icon: 'lucide:users' },
     ]}
   />
 
@@ -36,7 +36,9 @@ import PipelineCalculator from '@/components/hiring-pipeline/PipelineCalculator'
       </div>
 
       <!-- Calculator -->
-      <div class="not-prose w-full bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
+      <div
+        class="not-prose w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl"
+      >
         <div class="p-6">
           <PipelineCalculator client:load />
         </div>
@@ -63,8 +65,7 @@ import PipelineCalculator from '@/components/hiring-pipeline/PipelineCalculator'
         <h3>Set Your Timeline</h3>
         <ul>
           <li>
-            Enter your target "Weeks to Hire" - this is how soon you need a
-            hire
+            Enter your target "Weeks to Hire" - this is how soon you need a hire
           </li>
           <li>
             The calculator shows how many candidates you need to reach out to

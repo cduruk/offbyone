@@ -1,17 +1,17 @@
-import { useState, useMemo, useEffect } from "react";
-import { simulateDays } from "@/components/poisson-interrupt/simulation";
-import type { DeepWorkThreshold } from "@/components/poisson-interrupt/constants";
-import { PERSONAS } from "@/components/poisson-interrupt/constants";
-import { SimulationControls } from "./SimulationControls";
-import { GoalDefinition } from "./GoalDefinition";
-import { SimulationStats } from "./SimulationStats";
-import { DaysGrid } from "./DaysGrid";
-import { DayDetailView } from "./DayDetailView";
+import { useState, useMemo, useEffect } from 'react'
+import { simulateDays } from '@/components/poisson-interrupt/simulation'
+import type { DeepWorkThreshold } from '@/components/poisson-interrupt/constants'
+import { PERSONAS } from '@/components/poisson-interrupt/constants'
+import { SimulationControls } from './SimulationControls'
+import { GoalDefinition } from './GoalDefinition'
+import { SimulationStats } from './SimulationStats'
+import { DaysGrid } from './DaysGrid'
+import { DayDetailView } from './DayDetailView'
 
 // --- State Initialization Helper ---
 function getInitialState() {
   // Check if we're in a browser environment
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return {
       lambda: 1.0,
       recovery: 11,
@@ -19,11 +19,11 @@ function getInitialState() {
       targetBlockCount: 1,
       seed: 12345,
       selectedDayIndex: null as number | null,
-      selectedPersonaId: "maker",
-    };
+      selectedPersonaId: 'maker',
+    }
   }
 
-  const params = new URLSearchParams(window.location.search);
+  const params = new URLSearchParams(window.location.search)
 
   // Only initialize from URL if params exist
   if (Array.from(params.keys()).length === 0) {
@@ -34,48 +34,48 @@ function getInitialState() {
       targetBlockCount: 1,
       seed: 12345,
       selectedDayIndex: null as number | null,
-      selectedPersonaId: "maker",
-    };
+      selectedPersonaId: 'maker',
+    }
   }
 
   const getFloat = (k: string, def: number) => {
-    const v = params.get(k);
-    return v ? parseFloat(v) : def;
-  };
+    const v = params.get(k)
+    return v ? parseFloat(v) : def
+  }
   const getInt = (k: string, def: number) => {
-    const v = params.get(k);
-    return v ? parseInt(v, 10) : def;
-  };
+    const v = params.get(k)
+    return v ? parseInt(v, 10) : def
+  }
 
-  const lambda = getFloat("lambda", 1.0);
-  const recovery = getInt("delta", 11);
+  const lambda = getFloat('lambda', 1.0)
+  const recovery = getInt('delta', 11)
 
-  const thresholdVal = getInt("len", 60);
+  const thresholdVal = getInt('len', 60)
   const threshold = (
     [30, 45, 60].includes(thresholdVal) ? thresholdVal : 60
-  ) as DeepWorkThreshold;
+  ) as DeepWorkThreshold
 
-  const targetBlockCount = getInt("target", 1);
-  const seed = getInt("seed", 12345);
+  const targetBlockCount = getInt('target', 1)
+  const seed = getInt('seed', 12345)
 
-  const dayVal = params.get("day");
-  let selectedDayIndex = dayVal !== null ? parseInt(dayVal, 10) : null;
+  const dayVal = params.get('day')
+  let selectedDayIndex = dayVal !== null ? parseInt(dayVal, 10) : null
   if (
     selectedDayIndex !== null &&
     (selectedDayIndex < 0 || selectedDayIndex >= 100)
   ) {
-    selectedDayIndex = null;
+    selectedDayIndex = null
   }
 
   // Determine persona based on lambda/recovery
   const match = PERSONAS.find(
     (p) =>
-      p.id !== "custom" &&
+      p.id !== 'custom' &&
       Math.abs((p.lambda || 0) - lambda) < 0.01 &&
-      p.recovery === recovery
-  );
+      p.recovery === recovery,
+  )
 
-  const selectedPersonaId = match ? match.id : "custom";
+  const selectedPersonaId = match ? match.id : 'custom'
 
   return {
     lambda,
@@ -85,96 +85,96 @@ function getInitialState() {
     seed,
     selectedDayIndex,
     selectedPersonaId,
-  };
+  }
 }
 
 // --- Main Component ---
 
 export function PoissonInterruptionsGrid() {
   // --- State ---
-  const initial = useMemo(() => getInitialState(), []);
+  const initial = useMemo(() => getInitialState(), [])
 
   // Simulation parameters
   const [selectedPersonaId, setSelectedPersonaId] = useState<string>(
-    initial.selectedPersonaId
-  );
-  const [lambda, setLambda] = useState<number>(initial.lambda);
-  const [recovery, setRecovery] = useState<number>(initial.recovery);
+    initial.selectedPersonaId,
+  )
+  const [lambda, setLambda] = useState<number>(initial.lambda)
+  const [recovery, setRecovery] = useState<number>(initial.recovery)
 
   const [threshold, setThreshold] = useState<DeepWorkThreshold>(
-    initial.threshold
-  );
+    initial.threshold,
+  )
   const [targetBlockCount, setTargetBlockCount] = useState<number>(
-    initial.targetBlockCount
-  );
-  const [seed, setSeed] = useState<number>(initial.seed);
+    initial.targetBlockCount,
+  )
+  const [seed, setSeed] = useState<number>(initial.seed)
 
   const [selectedDayIndex, setSelectedDayIndex] = useState<number | null>(
-    initial.selectedDayIndex
-  );
+    initial.selectedDayIndex,
+  )
 
   // --- URL Sync ---
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    params.set("lambda", lambda.toFixed(1));
-    params.set("delta", recovery.toString());
-    params.set("len", threshold.toString());
-    params.set("target", targetBlockCount.toString());
-    params.set("seed", seed.toString());
+    const params = new URLSearchParams(window.location.search)
+    params.set('lambda', lambda.toFixed(1))
+    params.set('delta', recovery.toString())
+    params.set('len', threshold.toString())
+    params.set('target', targetBlockCount.toString())
+    params.set('seed', seed.toString())
 
     if (selectedDayIndex !== null) {
-      params.set("day", selectedDayIndex.toString());
+      params.set('day', selectedDayIndex.toString())
     } else {
-      params.delete("day");
+      params.delete('day')
     }
 
-    const newUrl = `${window.location.pathname}?${params.toString()}`;
+    const newUrl = `${window.location.pathname}?${params.toString()}`
     // Only update if changed to avoid loops or redundant updates
     if (newUrl !== `${window.location.pathname}${window.location.search}`) {
-      window.history.replaceState(null, "", newUrl);
+      window.history.replaceState(null, '', newUrl)
     }
-  }, [lambda, recovery, threshold, targetBlockCount, seed, selectedDayIndex]);
+  }, [lambda, recovery, threshold, targetBlockCount, seed, selectedDayIndex])
 
   // --- Handlers ---
 
   // --- Simulation ---
   const daysData = useMemo(() => {
-    return simulateDays(100, lambda, recovery, seed);
-  }, [lambda, recovery, seed]);
+    return simulateDays(100, lambda, recovery, seed)
+  }, [lambda, recovery, seed])
 
   // --- Stats for Summary ---
   const goodDaysCount = useMemo(() => {
     return daysData.filter((d) => {
       const qualifyingBlocksCapacity = d.blocks.reduce(
         (acc, b) => acc + Math.floor(b.duration / threshold),
-        0
-      );
-      return qualifyingBlocksCapacity >= targetBlockCount;
-    }).length;
-  }, [daysData, threshold, targetBlockCount]);
+        0,
+      )
+      return qualifyingBlocksCapacity >= targetBlockCount
+    }).length
+  }, [daysData, threshold, targetBlockCount])
 
   // --- Interaction ---
   const handleReseed = () => {
-    setSeed(Math.floor(Math.random() * 100000));
-    setSelectedDayIndex(null); // Reset view on reseed
-  };
+    setSeed(Math.floor(Math.random() * 100000))
+    setSelectedDayIndex(null) // Reset view on reseed
+  }
 
   const handlePersonaSelect = (id: string) => {
-    setSelectedPersonaId(id);
-    const p = PERSONAS.find((p) => p.id === id);
-    if (p && p.id !== "custom") {
-      setLambda(p.lambda!);
-      setRecovery(p.recovery!);
+    setSelectedPersonaId(id)
+    const p = PERSONAS.find((p) => p.id === id)
+    if (p && p.id !== 'custom') {
+      setLambda(p.lambda!)
+      setRecovery(p.recovery!)
     }
-  };
+  }
 
   const handleSliderChange = (setter: (val: number) => void, val: number) => {
-    setter(val);
-    setSelectedPersonaId("custom");
-  };
+    setter(val)
+    setSelectedPersonaId('custom')
+  }
 
   return (
-    <div className="w-full flex flex-col bg-white rounded-sm">
+    <div className="flex w-full flex-col rounded-sm bg-white">
       {/* Section 1: Define Your Environment */}
       <SimulationControls
         selectedPersonaId={selectedPersonaId}
@@ -203,7 +203,7 @@ export function PoissonInterruptionsGrid() {
 
       {/* Section 4: Detailed Simulation */}
       <div className="border-t-4 border-gray-200"></div>
-      <div className="p-6 flex justify-center bg-gray-50/50">
+      <div className="flex justify-center bg-gray-50/50 p-6">
         {/* Detail View (Zoomed In) */}
         {selectedDayIndex !== null ? (
           <DayDetailView
@@ -212,7 +212,7 @@ export function PoissonInterruptionsGrid() {
             onBack={() => setSelectedDayIndex(null)}
             onNext={() =>
               setSelectedDayIndex(
-                Math.min(daysData.length - 1, selectedDayIndex + 1)
+                Math.min(daysData.length - 1, selectedDayIndex + 1),
               )
             }
             onPrev={() =>
@@ -235,5 +235,5 @@ export function PoissonInterruptionsGrid() {
         )}
       </div>
     </div>
-  );
+  )
 }

@@ -2,13 +2,13 @@
 import BlogCard from '@/components/BlogCard.astro'
 import Link from '@/components/Link.astro'
 import PageHead from '@/components/PageHead.astro'
-import { buttonVariants } from '@/components/ui/button'
 import { badgeVariants } from '@/components/ui/badge'
+import { buttonVariants } from '@/components/ui/button'
 import { SITE } from '@/consts'
 import Layout from '@/layouts/Layout.astro'
-import { getRecentPosts, getFeaturedPosts, getAllTags } from '@/lib/data-utils'
-import { Image } from 'astro:assets'
+import { getAllTags, getFeaturedPosts, getRecentPosts } from '@/lib/data-utils'
 import { Icon } from 'astro-icon/components'
+import { Image } from 'astro:assets'
 import logo from '../../public/static/logo.svg'
 
 const blog = await getRecentPosts(SITE.featuredPostCount)
@@ -46,32 +46,45 @@ const allTags = await getAllTags()
       <p class="text-muted-foreground mb-2 text-[15px]">
         Here I write about <Link
           href="/tags/engineering-management"
-          class={badgeVariants({ variant: 'muted' }) + ' inline-flex items-center gap-1 align-baseline font-semibold'}
+          class={badgeVariants({ variant: 'muted' }) +
+            ' inline-flex items-center gap-1 align-baseline font-semibold'}
         >
           <Icon name="lucide:hash" class="size-3" />
           engineering management
-          <span class="text-muted-foreground ml-1.5">({allTags.get('engineering-management') || 0})</span></Link
+          <span class="text-muted-foreground ml-1.5"
+            >({allTags.get('engineering-management') || 0})</span
+          ></Link
         >, <Link
           href="/tags/tech-industry"
-          class={badgeVariants({ variant: 'muted' }) + ' inline-flex items-center gap-1 align-baseline font-semibold'}
+          class={badgeVariants({ variant: 'muted' }) +
+            ' inline-flex items-center gap-1 align-baseline font-semibold'}
         >
           <Icon name="lucide:hash" class="size-3" />
           tech industry
-          <span class="text-muted-foreground ml-1.5">({allTags.get('tech-industry') || 0})</span></Link
+          <span class="text-muted-foreground ml-1.5"
+            >({allTags.get('tech-industry') || 0})</span
+          ></Link
         >, and <Link
           href="/tags/social-media"
-          class={badgeVariants({ variant: 'muted' }) + ' inline-flex items-center gap-1 align-baseline font-semibold'}
+          class={badgeVariants({ variant: 'muted' }) +
+            ' inline-flex items-center gap-1 align-baseline font-semibold'}
         >
           <Icon name="lucide:hash" class="size-3" />
           other
-          <span class="text-muted-foreground ml-1.5">({allTags.get('social-media') || 0})</span></Link
-        > <Link
+          <span class="text-muted-foreground ml-1.5"
+            >({allTags.get('social-media') || 0})</span
+          ></Link
+        >
+        <Link
           href="/tags/margins"
-          class={badgeVariants({ variant: 'muted' }) + ' inline-flex items-center gap-1 align-baseline font-semibold'}
+          class={badgeVariants({ variant: 'muted' }) +
+            ' inline-flex items-center gap-1 align-baseline font-semibold'}
         >
           <Icon name="lucide:hash" class="size-3" />
           topics
-          <span class="text-muted-foreground ml-1.5">({allTags.get('margins') || 0})</span></Link
+          <span class="text-muted-foreground ml-1.5"
+            >({allTags.get('margins') || 0})</span
+          ></Link
         >.
       </p>
       {
@@ -83,7 +96,7 @@ const allTags = await getAllTags()
                 <li>
                   <Link
                     href={`/posts/${post.id}`}
-                    class="text-foreground hover:text-primary transition-colors before:content-['#_'] before:text-primary font-semibold italic"
+                    class="text-foreground hover:text-primary before:text-primary font-semibold italic transition-colors before:content-['#_']"
                   >
                     {post.data.title}
                   </Link>
