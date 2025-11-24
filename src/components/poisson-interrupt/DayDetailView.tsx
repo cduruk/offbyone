@@ -353,7 +353,7 @@ export const DayDetailView: React.FC<DayDetailViewProps> = ({
                   strokeWidth="2"
                   className="drop-shadow-sm"
                 >
-                  <title>Focus Block: {Math.round(block.duration)}m</title>
+                  <title>{`Focus Block: ${Math.round(block.duration)}m`}</title>
                 </rect>
                 {width > 30 && (
                   <text
