@@ -16,7 +16,11 @@
 
 **When to run linting:**
 
-1. **Before commits**: Run `npm run lint:fix` to auto-fix issues and `npm run format` to format code
+1. **Before commits**:
+   - Run `npm run lint:fix` to auto-fix issues
+   - Run `npm run format` to format code
+   - **Verify with `npm run format:check`** to ensure all files were formatted
+   - If format:check still shows warnings, run prettier directly on those specific files
 2. **After major changes**: Run `npm run lint` to check for issues without modifying files
 3. **Before PRs**: The build process (`npm run build`) automatically runs linting first
 4. **During development**: Configure your editor to show ESLint warnings in real-time
