@@ -41,8 +41,7 @@ export default defineConfig({
         codeFontSize: '0.75rem',
         borderColor: 'var(--border)',
         codeFontFamily: 'var(--font-mono)',
-        codeBackground:
-          'color-mix(in oklab, var(--muted) 25%, transparent)',
+        codeBackground: 'color-mix(in oklab, var(--muted) 25%, transparent)',
         frames: {
           editorActiveTabForeground: 'var(--muted-foreground)',
           editorActiveTabBackground:

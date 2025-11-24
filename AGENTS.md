@@ -44,20 +44,24 @@
 **Always work on a new branch and create a PR:**
 
 1. **Create a new branch** at the start of any non-trivial work:
+
    ```bash
    git checkout -b descriptive-branch-name
    ```
 
 2. **Make commits** as you complete discrete pieces of work:
+
    - Write clear, descriptive commit messages
    - Include the Claude Code co-author footer
    - Break work into logical commits (e.g., separate commits for import, grammar fixes, link updates)
 
 3. **Push branch and create PR** when work is complete:
+
    ```bash
    git push -u origin branch-name
    gh pr create --title "..." --body "..."
    ```
+
    - Write a comprehensive PR description summarizing all changes
    - Include context about what was done and why
    - List key changes as bullet points
@@ -96,10 +100,12 @@ When importing blog posts from external sites (e.g., Margins, Substack):
 **Always validate YAML frontmatter for proper quote escaping:**
 
 When frontmatter fields contain apostrophes or contractions (e.g., "don't", "can't", "you'll"):
+
 - **Use double quotes** for the entire string value (preferred for readability)
 - **Or double the apostrophe** if using single quotes (`''` becomes the escape sequence)
 
 **Examples:**
+
 ```yaml
 # ✅ Correct - use double quotes
 description: "Why you don't want to make this mistake"
@@ -112,11 +118,13 @@ description: 'Why you don't want to make this mistake'
 ```
 
 **Why this matters:**
+
 - Invalid YAML causes MDX files to fail parsing during Astro build
 - The error prevents the entire post from loading
 - Particularly important for `title` and `description` fields
 
 **When to check:**
+
 - When importing posts with user-written descriptions
 - When titles or descriptions contain possessives or contractions
 - Before running the build process
@@ -131,12 +139,17 @@ description: 'Why you don't want to make this mistake'
 ### Embedding Social Media Content
 
 **Twitter/X Embeds:**
+
 - Use the official Twitter embed code from the tweet
 - Center embeds using a flex container:
   ```html
   <div style="display: flex; justify-content: center; margin: 2rem 0;">
     <blockquote class="twitter-tweet">...</blockquote>
-    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    <script
+      async
+      src="https://platform.twitter.com/widgets.js"
+      charset="utf-8"
+    ></script>
   </div>
   ```
 - Place embeds contextually where they're first referenced in the text
@@ -176,6 +189,7 @@ When copy-editing blog posts, check for:
 - **Duplicate prepositions**: "for enough for people" → "for enough people"
 
 After making grammar fixes:
+
 - Create a commit detailing all corrections made
 - Be specific about what was fixed (e.g., "Add missing conjunction", "Remove duplicate preposition")
 
@@ -192,6 +206,7 @@ After making grammar fixes:
 Interactive tools should live under `/tools/` directory with proper navigation structure:
 
 **Directory Structure:**
+
 ```
 src/pages/tools/
 ├── index.astro           # Landing page listing all tools
@@ -200,13 +215,14 @@ src/pages/tools/
 ```
 
 **Tool Page Pattern:**
+
 ```astro
 ---
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import PageHead from '@/components/PageHead.astro'
-import Layout from '@/layouts/Layout.astro'
 import { YourReactComponent } from '@/components/your-tool/YourReactComponent'
-import '@/styles/your-tool.css'  // Tool-specific styles
+import Layout from '@/layouts/Layout.astro'
+import '@/styles/your-tool.css' // Tool-specific styles
 ---
 
 <Layout class="max-w-5xl">
@@ -219,7 +235,7 @@ import '@/styles/your-tool.css'  // Tool-specific styles
   <Breadcrumbs
     items={[
       { href: '/tools/', label: 'Tools', icon: 'lucide:wrench' },
-      { label: 'Your Tool Name', icon: 'lucide:activity' }
+      { label: 'Your Tool Name', icon: 'lucide:activity' },
     ]}
   />
 
@@ -242,8 +258,8 @@ React components can be embedded in blog posts with proper hydration directives:
 
 ```mdx
 ---
-title: "Your Post Title"
-description: "Post description"
+title: 'Your Post Title'
+description: 'Post description'
 ---
 
 import { YourReactComponent } from '@/components/your-tool/YourReactComponent'
@@ -254,17 +270,14 @@ import '@/styles/your-tool.css'
 Your content here...
 
 <div class="not-prose">
-  <YourReactComponent
-    param1={value1}
-    param2={value2}
-    client:load
-  />
+  <YourReactComponent param1={value1} param2={value2} client:load />
 </div>
 
 More content...
 ```
 
 **Hydration Directives:**
+
 - `client:load` - Load immediately on page load (for critical components)
 - `client:idle` - Load after page is interactive (better for performance)
 - `client:visible` - Load when component enters viewport
@@ -274,17 +287,20 @@ More content...
 When creating interactive tools with custom styling:
 
 **When to create separate CSS files:**
+
 - Tool uses CSS custom properties not needed elsewhere
 - Tool has significant styling that would clutter global.css
 - Tool might be reused across multiple pages
 - Tool needs scoped color schemes or theme variables
 
 **Pattern:**
+
 1. Create `/src/styles/tool-name.css` with tool-specific variables
 2. Import in both the standalone tool page AND blog posts that embed it
 3. Remove tool-specific variables from global.css
 
 **Example:**
+
 ```css
 /* src/styles/poisson-visualizations.css */
 :root {
@@ -305,6 +321,7 @@ When creating interactive tools with custom styling:
 SVG elements require special handling for dark mode compatibility:
 
 **SVG Text Readability:**
+
 ```tsx
 // Adaptive fill colors for text
 <text
@@ -322,6 +339,7 @@ SVG elements require special handling for dark mode compatibility:
 ```
 
 **Key Principles:**
+
 - Use medium gray (`gray-600`) for light mode text, not dark gray (`gray-900`)
 - Use light gray (`gray-100`) for dark mode text for high contrast
 - Keep text shadow blur radius small (2px) for crisp readability
@@ -329,18 +347,20 @@ SVG elements require special handling for dark mode compatibility:
 - Use `font-bold` or `font-semibold` to improve base visibility
 
 **SVG Pattern & Shape Colors:**
+
 ```css
 /* Hatched patterns need lighter colors in dark mode */
 :root {
-  --svg-slate-300: #cbd5e1;  /* Medium gray for light mode */
+  --svg-slate-300: #cbd5e1; /* Medium gray for light mode */
 }
 
 [data-theme='dark'] {
-  --svg-slate-300: #94a3b8;  /* Lighter gray for dark mode contrast */
+  --svg-slate-300: #94a3b8; /* Lighter gray for dark mode contrast */
 }
 ```
 
 **Common Issues & Solutions:**
+
 - **Text too dark in light mode**: Use `fill-gray-600` instead of `fill-gray-900`
 - **Text invisible in dark mode**: Use `dark:fill-gray-100` for high contrast
 - **Glowing effect**: Reduce shadow blur from 6px to 2px and lower opacity
@@ -348,6 +368,7 @@ SVG elements require special handling for dark mode compatibility:
 
 **Testing Dark Mode:**
 Always test visualizations in both light and dark modes before committing:
+
 ```bash
 # Toggle dark mode in browser DevTools or system settings
 # Verify text readability, pattern visibility, and color contrast

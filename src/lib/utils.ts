@@ -65,7 +65,8 @@ export function ensureTrailingSlash(href: string): string {
   const hashIndex = href.indexOf('#')
 
   // Determine if we have a real query string (? must come before #, if # exists)
-  const hasQuery = queryIndex !== -1 && (hashIndex === -1 || queryIndex < hashIndex)
+  const hasQuery =
+    queryIndex !== -1 && (hashIndex === -1 || queryIndex < hashIndex)
   const hasHash = hashIndex !== -1 && !hasQuery // Only treat # as delimiter if no query before it
 
   let pathPart: string
