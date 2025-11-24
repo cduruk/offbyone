@@ -6,11 +6,15 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "npm run generate-og-images && astro check && astro build",
+    "build": "npm run lint && npm run generate-og-images && astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
     "new-post": "tsx scripts/new-post.ts",
     "generate-og-images": "tsx scripts/generate-og-images.ts",
+    "format": "prettier --write **/*.{ts,tsx,css,astro,md} --ignore-path .gitignore",
+    "format:check": "prettier --check **/*.{ts,tsx,css,astro,md} --ignore-path .gitignore",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
     "prettier": "prettier --write **/*.{ts,tsx,css,astro,md} --ignore-path .gitignore",
     "test": "vitest",
     "test:ui": "vitest --ui",
@@ -52,8 +56,15 @@
     "typescript": "^5.8.3"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.1",
     "@resvg/resvg-js": "^2.6.2",
     "@types/node": "^24.9.1",
+    "eslint": "^9.39.1",
+    "eslint-plugin-astro": "^1.5.0",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
     "glob": "^11.0.3",
     "prettier": "^3.5.1",
     "prettier-plugin-astro": "^0.14.1",
@@ -62,6 +73,7 @@
     "satori": "^0.18.3",
     "sharp": "^0.34.4",
     "tsx": "^4.20.6",
+    "typescript-eslint": "^8.47.0",
     "vitest": "^4.0.4"
   },
   "prettier": {

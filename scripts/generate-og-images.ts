@@ -91,6 +91,7 @@ export function parseCliArgs(args: string[]): CliOptions {
       continue
     }
 
+    // eslint-disable-next-line prefer-const
     let [rawKey, valueFromSame] = arg.slice(2).split('=', 2)
 
     if (!rawKey) {

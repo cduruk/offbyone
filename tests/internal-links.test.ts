@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { readFileSync, readdirSync } from 'fs'
-import { join } from 'path'
+import { readFileSync } from 'fs'
 import { globSync } from 'glob'
 
 describe('Internal blog post links', () => {

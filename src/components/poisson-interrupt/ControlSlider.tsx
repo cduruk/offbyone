@@ -33,7 +33,7 @@ export const ControlSlider: React.FC<ControlSliderProps> = ({
       return
     }
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     setDisplayValue((prevDisplayValue) => {
       if (prevDisplayValue === value) {
         return prevDisplayValue
