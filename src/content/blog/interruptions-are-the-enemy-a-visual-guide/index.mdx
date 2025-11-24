@@ -1,0 +1,65 @@
+---
+title: "Interruptions Are the Enemy, a Visual Guide"
+description: "Visual simulations showing how random interruptions fragment deep work and destroy productivity."
+date: 2025-11-24
+tags: ["programming", "tech-industry", "engineering-management"]
+ogImage: './og-image.png'
+authors: ["cduruk"]
+---
+
+import Callout from '@/components/Callout.astro'
+import { DaysGridEmbed } from '@/components/poisson-interrupt/DaysGridEmbed'
+import { DayDetailEmbed } from '@/components/poisson-interrupt/DayDetailEmbed'
+import { FocusBlocksHeatmapEmbed } from '@/components/poisson-interrupt/FocusBlocksHeatmapEmbed'
+
+## Introduction
+
+Your content here...
+
+## 100-Day Simulation
+
+The grid below shows 100 simulated workdays. Each cell represents one 8-hour day, color-coded by the longest continuous focus block achieved.
+
+<div class="not-prose w-full my-8">
+  <DaysGridEmbed
+    lambda={1.0}
+    delta={11}
+    len={60}
+    target={1}
+    seed={42}
+    showOverlay={true}
+    client:load
+  />
+</div>
+
+## A Closer Look at One Day
+
+Let's examine a single day in detail to see exactly how interruptions fragment focus time.
+
+<div class="not-prose w-full my-8">
+  <DayDetailEmbed
+    lambda={1.0}
+    delta={11}
+    len={60}
+    seed={42}
+    day={5}
+    showNavigation={true}
+    client:load
+  />
+</div>
+
+## Parameter Space Heatmap
+
+This heatmap shows the expected number of focus blocks across different combinations of interruption rates (λ) and recovery times (δ).
+
+<div class="not-prose w-full my-8">
+  <FocusBlocksHeatmapEmbed
+    threshold={60}
+    showThresholdControl={true}
+    client:load
+  />
+</div>
+
+## Explore the Full Tool
+
+For a more comprehensive exploration of how interruptions affect productivity, check out the [full interactive tool](/tools/interruptions/).
