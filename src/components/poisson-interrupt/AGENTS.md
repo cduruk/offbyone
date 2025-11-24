@@ -1,216 +1,171 @@
-# Agent Instructions
+# Component Developer Guide
 
 > **Note:** For project overview, features, and user documentation, see [README.md](README.md).
-> This file contains developer-focused context for AI coding assistants.
+> This file contains developer-focused context for maintaining the Poisson Interruption components.
 
-## Commands
+## Overview
 
-- **Dev**: `npm run dev` (Starts Vite dev server)
-- **Build**: `npm run build` (Builds for production)
-- **Preview**: `npm run preview` (Previews production build)
-- **Typecheck**: `npx tsc --noEmit` (Runs TypeScript type checking)
+These components were originally developed as a standalone React/Vite application and have been integrated into the Astro blog. They provide interactive visualizations for understanding how interruptions fragment deep work time.
 
 ## Architecture & Structure
 
-- **Stack**: React 19, Vite 6, TypeScript 5.8, Tailwind CSS, Lucide React.
+- **Stack**: React 19, TypeScript, Tailwind CSS, Lucide React (integrated within Astro)
 - **Structure**:
-  - `components/`: UI components (e.g., `PoissonInterruptionsGrid.tsx` for main visualization).
-  - `lib/`: Business logic (e.g., `simulation.ts` for Poisson logic).
-  - `App.tsx`: Main entry component.
-- **Key Logic**: `simulation.ts` handles `simulateDays` using a seeded RNG and Poisson distribution.
-- **Visualization**: Custom SVG implementation in `PoissonInterruptionsGrid.tsx`.
+  - `components/`: React UI components for visualizations
+  - `lib/`: Business logic including simulation engine and constants
+  - `styles/`: CSS custom properties in `/src/styles/poisson-visualizations.css`
+- **Key Logic**: `simulation.ts` handles `simulateDays` using a seeded RNG and Poisson distribution
+- **Visualization**: Custom SVG implementation without chart library dependencies
 
 ## Code Style & Conventions
 
-- **Naming**: PascalCase for components, camelCase for functions/vars.
-- **Types**: Strict TypeScript. Define interfaces (e.g., `DayStats`, `WorkBlock`) in `lib/` or locally.
-- **Styling**: Use Tailwind CSS utility classes. Avoid inline styles for layout.
-- **Imports**: Group imports: React/Libs -> Internal Logic -> Components -> Assets/Icons.
-- **Components**: Functional components with hooks. Avoid class components.
-- **Icons**: Use `lucide-react`.
+- **Naming**: PascalCase for components, camelCase for functions/vars
+- **Types**: Strict TypeScript. Define interfaces (e.g., `DayStats`, `WorkBlock`) in `lib/` or locally
+- **Styling**: Use Tailwind CSS utility classes. Avoid inline styles for layout
+- **Imports**: Group imports: React/Libs -> Internal Logic -> Components -> Assets/Icons
+- **Components**: Functional components with hooks. Avoid class components
+- **Icons**: Use `lucide-react`
 
-## Git Commit Conventions
+## Integration Notes
 
-This project uses **conventional commits** format for clear, searchable git history.
+- Components use Astro's `client:load` directive for hydration
+- CSS variables must be imported in any page/post that uses these components
+- Components are self-contained and can be used in both standalone pages and embedded in blog posts
 
-### Commit Message Format
+## Dark Mode Implementation
 
-```
-<type>(<scope>): <description>
+### CSS Variables Location
 
-[optional body]
+The component's styling uses CSS custom properties defined in `/src/styles/poisson-visualizations.css` in the parent Astro blog. This file must be imported in any page or post that uses the visualizations.
 
-[optional footer]
-```
-
-### Commit Types
-
-- **feat**: New feature or functionality
-- **fix**: Bug fix
-- **docs**: Documentation changes only
-- **style**: Code style/formatting (no logic changes)
-- **refactor**: Code restructuring (no feature changes)
-- **perf**: Performance improvements
-- **test**: Adding or updating tests
-- **chore**: Build process, dependencies, tooling
-
-### Examples
-
-**Good commits:**
-```
-feat: add focus blocks heatmap visualization
-fix: resolve TypeScript errors after Shadcn integration
-docs: update README for code consistency
-refactor: centralize color system with CSS variables
-style: fix prettier formatting issues
-chore: remove .vite build artifacts from version control
+**Import in Astro pages:**
+```astro
+---
+import '@/styles/poisson-visualizations.css'
+---
 ```
 
-**Bad commits (avoid):**
-```
-Fix                    # Too vague - fix what?
-Update                 # What was updated?
-Changes                # What kind of changes?
-WIP                    # Never commit WIP to main
-Final changes          # Not descriptive
+**Import in MDX files:**
+```mdx
+import '@/styles/poisson-visualizations.css'
 ```
 
-### Guidelines
+### SVG Text Styling for Dark Mode
 
-1. **Be specific**: Describe *what* and *why*, not *how*
-2. **Use imperative mood**: "add feature" not "added feature"
-3. **Keep subject line under 72 characters**
-4. **One logical change per commit**: Separate fixes from features
-5. **Reference issues when applicable**: `fix: resolve modal bug (#123)`
-6. **Use scope for clarity**: `feat(heatmap): add threshold toggle controls`
+Through testing and iteration, we found the optimal approach for SVG text readability:
 
-### Commit Body (when needed)
+**Adaptive Fill Colors:**
+```tsx
+// ✅ Correct - readable in both modes
+className="fill-gray-600 dark:fill-gray-100"
 
-Add a body for complex changes:
-```
-feat: add embeddable React components for external integration
+// ❌ Wrong - too dark in light mode
+className="fill-gray-900 dark:fill-gray-100"
 
-- Create DaysGridEmbed and DayDetailEmbed components
-- Add FocusBlocksHeatmapEmbed for heatmap visualization
-- Add routing for /embed-grid, /embed-day paths
-- Update ASTRO_EMBEDDING_GUIDE.md with component examples
-
-This enables developers to embed visualizations in their own
-applications using React components rather than iframes.
+// ❌ Wrong - no dark mode support
+className="fill-gray-500"
 ```
 
-### What NOT to commit
+**Adaptive Text Shadows:**
+```tsx
+// ✅ Correct - adaptive shadows with small blur
+className="[text-shadow:0_0_2px_rgba(255,255,255,0.9)] dark:[text-shadow:0_0_2px_rgba(0,0,0,0.9)]"
 
-- Never commit `node_modules/`, `dist/`, or build artifacts (use `.gitignore`)
-- Avoid committing `.env` files or secrets
-- Don't commit commented-out code (delete it)
-- Don't commit debug console.logs (remove them)
+// ❌ Wrong - excessive blur creates glow effect
+className="[text-shadow:0_0_6px_rgba(255,255,255,1)]"
 
-### When to commit
-
-- After completing a logical unit of work
-- Before switching to a different task
-- When tests pass and code is verified
-- Never commit broken code to `main` branch
-
-## Pull Request Workflow
-
-**ALWAYS create a Pull Request for changes.** Never push directly to `main`.
-
-### Standard Workflow
-
-1. **Create a feature branch:**
-   ```bash
-   git checkout -b feature/your-feature-name
-   # or
-   git checkout -b fix/bug-description
-   ```
-
-2. **Make your changes with clean commits:**
-   ```bash
-   git add .
-   git commit -m "feat: add new feature"
-   ```
-
-3. **Push to remote:**
-   ```bash
-   git push -u origin feature/your-feature-name
-   ```
-
-4. **Create Pull Request on GitHub:**
-   - Use descriptive PR title (similar to commit message format)
-   - Add clear description of what changed and why
-   - Reference any related issues
-   - Request review if working with others
-
-5. **Before merging, ensure:**
-   - ✅ All tests pass (`npm run type-check && npm run lint && npm run build`)
-   - ✅ Code is formatted (`npm run format`)
-   - ✅ No merge conflicts
-   - ✅ PR has been reviewed (if applicable)
-
-6. **Merge the PR:**
-   - Use **"Squash and merge"** for feature branches (keeps main clean)
-   - Use **"Rebase and merge"** if commits are already well-organized
-   - Delete the branch after merging
-
-### Branch Naming Conventions
-
-- `feature/feature-name` - New features
-- `fix/bug-description` - Bug fixes
-- `docs/update-description` - Documentation updates
-- `refactor/component-name` - Code refactoring
-- `chore/task-description` - Maintenance tasks
-
-### PR Title Format
-
-Follow the same conventional commits format:
-```
-feat(heatmap): add threshold toggle controls
-fix(simulation): resolve edge case in Poisson calculation
-docs: update embedding guide with new examples
-refactor: centralize color system
+// ❌ Wrong - not adaptive
+className="[text-shadow:0_0_2px_white]"
 ```
 
-### PR Description Template
+**Font Weight:**
+```tsx
+// ✅ Use bold for better base visibility
+className="fill-gray-600 dark:fill-gray-100 font-bold"
 
-```markdown
-## Summary
-Brief description of what this PR does
-
-## Changes
-- List of specific changes made
-- Another change
-- One more change
-
-## Testing
-- [ ] Type checking passes
-- [ ] Linting passes
-- [ ] Build succeeds
-- [ ] Verified simulation consistency
-- [ ] Tested in browser
-
-## Screenshots (if applicable)
-[Add screenshots for UI changes]
+// For less prominent text, semibold works
+className="fill-gray-600 dark:fill-gray-100 font-semibold"
 ```
 
-### Why Use PRs?
+### Hatched Pattern Colors
 
-- **Code review**: Catch issues before they reach main
-- **Documentation**: PRs create a record of why changes were made
-- **Testing**: CI/CD can run automated checks
-- **Collaboration**: Team members can discuss changes
-- **Safety**: Easy to revert if something goes wrong
-- **Quality**: Enforces running tests and checks before merge
+Hatched patterns (like recovery penalties) need special consideration:
 
-### Emergency Hotfixes
+**CSS Variables Pattern:**
+```css
+/* Light mode - medium gray works well */
+:root {
+  --svg-slate-300: #cbd5e1;
+}
 
-Even for urgent fixes, create a PR:
-```bash
-git checkout -b hotfix/critical-bug
-# Make fix
-git push -u origin hotfix/critical-bug
-# Create PR, get quick review, merge immediately
+/* Dark mode - MUST be lighter for visibility */
+[data-theme='dark'] {
+  --svg-slate-300: #94a3b8;  /* Significantly lighter */
+}
 ```
 
-The few extra seconds to create a PR are worth the safety and documentation.
+**Why lighter colors in dark mode:**
+- Dark backgrounds reduce contrast of medium grays
+- Hatched patterns especially suffer from low contrast
+- Users reported patterns were "very hard to read" before adjustment
+- Lighter grays (#94a3b8 vs #475569) dramatically improve visibility
+
+### Implementation Example
+
+Complete example from `DayDetailView.tsx`:
+
+```tsx
+{/* Recovery penalty text - desktop view */}
+{duration > 5 && (
+  <text
+    x={x + width / 2}
+    y={TIMELINE_Y + BAR_HEIGHT / 2 + 5}
+    textAnchor="middle"
+    className="fill-gray-600 dark:fill-gray-100 font-bold text-xs italic pointer-events-none [text-shadow:0_0_2px_rgba(255,255,255,0.9)] dark:[text-shadow:0_0_2px_rgba(0,0,0,0.9)]"
+  >
+    {Math.round(duration)}m
+  </text>
+)}
+
+{/* Recovery penalty hatched pattern */}
+<rect
+  x={x}
+  y={y}
+  width={width}
+  height={height}
+  fill={`url(#recovery-pattern)`}
+  stroke="var(--svg-slate-300)"  // Uses adaptive CSS variable
+  strokeWidth={1}
+  opacity={0.6}
+/>
+```
+
+### Common Dark Mode Issues & Solutions
+
+**Issue: Text has glowing halo in dark mode**
+- **Cause**: Multiple white shadows with high opacity and large blur
+- **Solution**: Use single shadow with 2px blur and adaptive color
+
+**Issue: Text too dark in light mode**
+- **Cause**: Using `fill-gray-900` or darker
+- **Solution**: Use `fill-gray-600` for better balance
+
+**Issue: Hatched patterns invisible in dark mode**
+- **Cause**: Pattern stroke color too dark (e.g., #475569)
+- **Solution**: Use lighter color in dark mode (e.g., #94a3b8) via CSS variable
+
+**Issue: Text readable but lacks definition**
+- **Cause**: Using `font-medium` or normal weight
+- **Solution**: Use `font-bold` to improve base visibility
+
+### Testing Checklist
+
+Before committing changes to SVG visualizations:
+
+- [ ] Toggle between light and dark modes
+- [ ] Verify text readability in both modes
+- [ ] Check hatched pattern visibility
+- [ ] Ensure no glowing or halo effects
+- [ ] Test on both desktop and mobile views
+- [ ] Verify shadows are adaptive (white in light, black in dark)
+- [ ] Check that CSS variables are imported in consuming pages
