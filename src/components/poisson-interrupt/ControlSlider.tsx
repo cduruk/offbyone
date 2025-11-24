@@ -33,7 +33,6 @@ export const ControlSlider: React.FC<ControlSliderProps> = ({
       return
     }
 
-     
     setDisplayValue((prevDisplayValue) => {
       if (prevDisplayValue === value) {
         return prevDisplayValue
