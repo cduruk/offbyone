@@ -312,7 +312,7 @@ export const DayDetailView: React.FC<DayDetailViewProps> = ({
                     textAnchor="middle"
                     className="pointer-events-none fill-gray-600 text-xs font-bold italic [text-shadow:0_0_2px_rgba(255,255,255,0.9)] dark:fill-gray-100 dark:[text-shadow:0_0_2px_rgba(0,0,0,0.9)]"
                   >
-                    {Math.round(duration)}m
+                    {`${Math.round(duration)}m`}
                   </text>
                 )}
               </g>
@@ -363,7 +363,7 @@ export const DayDetailView: React.FC<DayDetailViewProps> = ({
                     className="pointer-events-none fill-white text-sm font-bold"
                     style={{ textShadow: '0px 1px 2px rgba(0,0,0,0.2)' }}
                   >
-                    {Math.round(block.duration)}m
+                    {`${Math.round(block.duration)}m`}
                   </text>
                 )}
               </g>
@@ -459,7 +459,7 @@ export const DayDetailView: React.FC<DayDetailViewProps> = ({
                   textAnchor="middle"
                   className="fill-gray-600 text-[10px] font-bold italic [text-shadow:0_0_2px_rgba(255,255,255,0.9)] dark:fill-gray-100 dark:[text-shadow:0_0_2px_rgba(0,0,0,0.9)]"
                 >
-                  {Math.round(duration)}m gap
+                  {`${Math.round(duration)}m gap`}
                 </text>
               )}
             </g>
@@ -507,7 +507,7 @@ export const DayDetailView: React.FC<DayDetailViewProps> = ({
                   className="fill-white text-sm font-bold"
                   style={{ textShadow: '0px 1px 2px rgba(0,0,0,0.2)' }}
                 >
-                  {Math.round(block.duration)}m
+                  {`${Math.round(block.duration)}m`}
                 </text>
               ) : null}
 
