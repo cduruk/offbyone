@@ -50,16 +50,6 @@
   --ring: var(--highlight); /* highlight red */
   --accent-cyan: oklch(0.58 0.08 195); /* cyan-400 #3AA99F */
   --accent-blue: oklch(0.57 0.1 245); /* blue-400 #4385BE */
-
-  /* SVG/Chart colors for visualizations */
-  --svg-slate-50: #f8fafc;
-  --svg-slate-100: #f1f5f9;
-  --svg-slate-200: #e2e8f0;
-  --svg-slate-300: #cbd5e1;
-  --svg-slate-500: #64748b;
-  --svg-blue-50: #f0f9ff;
-  --svg-indigo-500: #6366f1;
-  --svg-red-500: #ef4444;
 }
 
 [data-theme='dark'] {
@@ -76,16 +66,6 @@
   --ring: var(--highlight); /* highlight red */
   --accent-cyan: oklch(0.75 0.06 195); /* cyan-600 #8EDAD8 */
   --accent-blue: oklch(0.74 0.08 245); /* blue-600 #8DB7E5 */
-
-  /* SVG/Chart colors for visualizations - dark mode */
-  --svg-slate-50: #0f172a;
-  --svg-slate-100: #1e293b;
-  --svg-slate-200: #334155;
-  --svg-slate-300: #94a3b8; /* Lighter for better contrast in hatched patterns */
-  --svg-slate-500: #94a3b8;
-  --svg-blue-50: #1e3a8a;
-  --svg-indigo-500: #818cf8;
-  --svg-red-500: #ef4444;
 }
 
 @layer base {
