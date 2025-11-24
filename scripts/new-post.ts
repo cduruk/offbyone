@@ -92,7 +92,11 @@ function parseArgs(args: string[]): CliOptions {
 
     let value = valueFromSame
 
-    if (value === undefined && index + 1 < args.length && !args[index + 1].startsWith('--')) {
+    if (
+      value === undefined &&
+      index + 1 < args.length &&
+      !args[index + 1].startsWith('--')
+    ) {
       value = args[index + 1]
       index += 1
     }
@@ -257,7 +261,9 @@ async function main(): Promise<void> {
     try {
       title = (await question('Post title: ')).trim()
     } catch (error) {
-      console.error('❌ Title is required. Provide it with --title when running non-interactively.')
+      console.error(
+        '❌ Title is required. Provide it with --title when running non-interactively.',
+      )
       process.exit(1)
     }
 
@@ -267,7 +273,8 @@ async function main(): Promise<void> {
   }
 
   // Generate and confirm slug
-  const slugSource = args.slug && args.slug.trim().length > 0 ? args.slug : title
+  const slugSource =
+    args.slug && args.slug.trim().length > 0 ? args.slug : title
   const slug = generateSlug(slugSource)
 
   if (args.slug && args.slug.trim().length > 0) {
@@ -329,8 +336,12 @@ async function main(): Promise<void> {
 
   closeReadline()
 
-  const date = args.date && args.date.trim().length > 0 ? args.date : formatDate(new Date())
-  const author = args.author && args.author.trim().length > 0 ? args.author : DEFAULT_AUTHOR
+  const date =
+    args.date && args.date.trim().length > 0
+      ? args.date
+      : formatDate(new Date())
+  const author =
+    args.author && args.author.trim().length > 0 ? args.author : DEFAULT_AUTHOR
 
   // Generate content
   const content = generatePostContent({

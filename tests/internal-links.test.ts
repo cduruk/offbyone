@@ -67,7 +67,7 @@ describe('Astro page internal links', () => {
       // Match <Link...>...</Link> across multiple lines
       const contentWithoutLinkComponents = content.replace(
         /<Link[^>]*>[\s\S]*?<\/Link>/g,
-        ''
+        '',
       )
 
       const lines = contentWithoutLinkComponents.split('\n')
@@ -90,7 +90,8 @@ describe('Astro page internal links', () => {
           if (!path.endsWith('/') && !/\.[a-z]+$/i.test(path)) {
             // Find the actual line number in the original content
             const originalLines = content.split('\n')
-            const actualLineNum = originalLines.findIndex(l => l.includes(path)) + 1
+            const actualLineNum =
+              originalLines.findIndex((l) => l.includes(path)) + 1
 
             errors.push({
               file: file.replace(process.cwd() + '/', ''),

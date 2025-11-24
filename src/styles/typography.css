@@ -188,12 +188,14 @@
       [data-theme='dark'],
       [data-theme='dark'] *
     ),
-  :where(.prose :where(a):not(:where(.not-prose, .not-prose *))):focus-visible:where(
+  :where(
+      .prose :where(a):not(:where(.not-prose, .not-prose *))
+    ):focus-visible:where([data-theme='dark'], [data-theme='dark'] *),
+  a.link-accent:hover:where([data-theme='dark'], [data-theme='dark'] *),
+  a.link-accent:focus-visible:where(
       [data-theme='dark'],
       [data-theme='dark'] *
-    ),
-  a.link-accent:hover:where([data-theme='dark'], [data-theme='dark'] *),
-  a.link-accent:focus-visible:where([data-theme='dark'], [data-theme='dark'] *) {
+    ) {
     color: var(--primary);
     text-decoration-color: var(--primary);
   }

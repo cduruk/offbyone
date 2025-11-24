@@ -1,4 +1,5 @@
 ---
+import profileImage from '@/assets/profile.jpg'
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import Link from '@/components/Link.astro'
 import PageHead from '@/components/PageHead.astro'
@@ -6,7 +7,6 @@ import ProjectCard from '@/components/ProjectCard.astro'
 import Layout from '@/layouts/Layout.astro'
 import { getAllProjects } from '@/lib/data-utils'
 import { Image } from 'astro:assets'
-import profileImage from '@/assets/profile.jpg'
 
 const projects = await getAllProjects()
 ---
@@ -22,7 +22,7 @@ const projects = await getAllProjects()
         <Image
           src={profileImage}
           alt="Can Duruk"
-          class="rounded-lg w-full object-cover my-6"
+          class="my-6 w-full rounded-lg object-cover"
           style="aspect-ratio: 16/9; max-height: 500px;"
           widths={[800, 1200, 1600]}
           sizes="(max-width: 768px) 100vw, 800px"

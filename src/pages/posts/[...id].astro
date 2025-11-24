@@ -138,10 +138,7 @@ const tocSections = await getTOCSections(currentPostId)
                 {authors.map((author) => (
                   <div class="flex items-center gap-x-1.5">
                     {author.isRegistered ? (
-                      <Link
-                        href={`/authors/${author.id}`}
-                        underline
-                      >
+                      <Link href={`/authors/${author.id}`} underline>
                         <span>{author.name}</span>
                       </Link>
                     ) : (

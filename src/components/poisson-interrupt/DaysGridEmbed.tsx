@@ -1,16 +1,16 @@
-import { useMemo, useState } from "react";
-import { DaysGrid } from "./DaysGrid";
-import { simulateDays } from "@/components/poisson-interrupt/simulation";
-import { Play } from "lucide-react";
+import { useMemo, useState } from 'react'
+import { DaysGrid } from './DaysGrid'
+import { simulateDays } from '@/components/poisson-interrupt/simulation'
+import { Play } from 'lucide-react'
 
 interface DaysGridEmbedProps {
-  lambda?: number;
-  delta?: number;
-  len?: 30 | 45 | 60;
-  target?: number;
-  seed?: number;
-  onSelectDay?: (dayIndex: number) => void;
-  showOverlay?: boolean;
+  lambda?: number
+  delta?: number
+  len?: 30 | 45 | 60
+  target?: number
+  seed?: number
+  onSelectDay?: (dayIndex: number) => void
+  showOverlay?: boolean
 }
 
 /**
@@ -39,34 +39,34 @@ export function DaysGridEmbed({
   onSelectDay,
   showOverlay = true,
 }: DaysGridEmbedProps) {
-  const [isRevealed, setIsRevealed] = useState(!showOverlay);
+  const [isRevealed, setIsRevealed] = useState(!showOverlay)
 
   // Generate simulation data
   const daysData = useMemo(
     () => simulateDays(100, lambda, delta, seed),
-    [lambda, delta, seed]
-  );
+    [lambda, delta, seed],
+  )
 
   // Default handler for day selection (no-op if not provided)
   const handleSelectDay = (dayIndex: number) => {
     if (onSelectDay) {
-      onSelectDay(dayIndex);
+      onSelectDay(dayIndex)
     } else {
-      console.log(`Day ${dayIndex} selected`);
+      console.log(`Day ${dayIndex} selected`)
     }
-  };
+  }
 
   return (
-    <div className="w-full relative">
+    <div className="relative w-full">
       {showOverlay && !isRevealed && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 rounded-lg shadow-sm">
+        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg border border-gray-200 bg-gradient-to-br from-gray-50 to-gray-100 shadow-sm">
           <button
             onClick={() => setIsRevealed(true)}
-            className="group flex flex-col items-center gap-4 px-8 py-6 hover:scale-105 transition-transform duration-200"
+            className="group flex flex-col items-center gap-4 px-8 py-6 transition-transform duration-200 hover:scale-105"
           >
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-teal-500 rounded-full shadow-lg group-hover:shadow-xl group-hover:bg-teal-600 transition-all duration-200">
-                <Play size={24} className="text-white fill-white" />
+              <div className="rounded-full bg-teal-500 p-3 shadow-lg transition-all duration-200 group-hover:bg-teal-600 group-hover:shadow-xl">
+                <Play size={24} className="fill-white text-white" />
               </div>
               <div className="text-left">
                 <div className="text-lg font-semibold text-gray-900">
@@ -85,7 +85,7 @@ export function DaysGridEmbed({
       )}
       <div
         className={
-          showOverlay && !isRevealed ? "opacity-20 pointer-events-none" : ""
+          showOverlay && !isRevealed ? 'pointer-events-none opacity-20' : ''
         }
       >
         <DaysGrid
@@ -98,5 +98,5 @@ export function DaysGridEmbed({
         />
       </div>
     </div>
-  );
+  )
 }

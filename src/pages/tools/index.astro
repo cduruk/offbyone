@@ -1,8 +1,14 @@
 ---
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import PageHead from '@/components/PageHead.astro'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import Layout from '@/layouts/Layout.astro'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 ---
 
 <Layout class="max-w-5xl">
@@ -12,9 +18,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
     description="Interactive tools and calculators for understanding interruptions, hiring pipelines, and productivity."
     ogImage="/static/og/about.png"
   />
-  <Breadcrumbs
-    items={[{ label: 'Tools', icon: 'lucide:wrench' }]}
-  />
+  <Breadcrumbs items={[{ label: 'Tools', icon: 'lucide:wrench' }]} />
 
   <section>
     <div class="min-w-full">
@@ -29,17 +33,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
       <div class="grid gap-6 md:grid-cols-2">
         <!-- Interruptions Simulator -->
         <a href="/tools/interruptions/" class="group block">
-          <Card className="h-full transition-all hover:border-primary hover:shadow-lg">
+          <Card
+            className="hover:border-primary h-full transition-all hover:shadow-lg"
+          >
             <CardHeader>
-              <CardTitle className="group-hover:text-primary">Interruptions Simulator</CardTitle>
+              <CardTitle className="group-hover:text-primary"
+                >Interruptions Simulator</CardTitle
+              >
               <CardDescription>
-                Visualize how random interruptions fragment deep work and destroy productivity
+                Visualize how random interruptions fragment deep work and
+                destroy productivity
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p class="text-sm text-muted-foreground">
-                Interactive simulations showing the impact of interruptions across 100 workdays,
-                with parameter space exploration and detailed timeline views.
+              <p class="text-muted-foreground text-sm">
+                Interactive simulations showing the impact of interruptions
+                across 100 workdays, with parameter space exploration and
+                detailed timeline views.
               </p>
               <ul class="mt-4 space-y-2 text-sm">
                 <li class="flex items-start gap-2">
@@ -61,17 +71,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
         <!-- Hiring Pipeline Calculator -->
         <a href="/tools/hiring-pipeline/" class="group block">
-          <Card className="h-full transition-all hover:border-primary hover:shadow-lg">
+          <Card
+            className="hover:border-primary h-full transition-all hover:shadow-lg"
+          >
             <CardHeader>
-              <CardTitle className="group-hover:text-primary">Hiring Pipeline Calculator</CardTitle>
+              <CardTitle className="group-hover:text-primary"
+                >Hiring Pipeline Calculator</CardTitle
+              >
               <CardDescription>
-                Calculate how many candidates you need to reach out to make one hire
+                Calculate how many candidates you need to reach out to make one
+                hire
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p class="text-sm text-muted-foreground">
-                Work backwards from your hiring goal to understand the scale of outreach
-                required at each stage of your recruitment funnel.
+              <p class="text-muted-foreground text-sm">
+                Work backwards from your hiring goal to understand the scale of
+                outreach required at each stage of your recruitment funnel.
               </p>
               <ul class="mt-4 space-y-2 text-sm">
                 <li class="flex items-start gap-2">

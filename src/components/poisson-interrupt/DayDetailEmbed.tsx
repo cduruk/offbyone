@@ -1,14 +1,14 @@
-import { useMemo, useState } from "react";
-import { DayDetailView } from "./DayDetailView";
-import { simulateDays } from "@/components/poisson-interrupt/simulation";
+import { useMemo, useState } from 'react'
+import { DayDetailView } from './DayDetailView'
+import { simulateDays } from '@/components/poisson-interrupt/simulation'
 
 interface DayDetailEmbedProps {
-  lambda?: number;
-  delta?: number;
-  len?: 30 | 45 | 60;
-  seed?: number;
-  day?: number;
-  showNavigation?: boolean;
+  lambda?: number
+  delta?: number
+  len?: 30 | 45 | 60
+  seed?: number
+  day?: number
+  showNavigation?: boolean
 }
 
 /**
@@ -37,37 +37,37 @@ export function DayDetailEmbed({
   showNavigation = false,
 }: DayDetailEmbedProps) {
   // Track current day index if navigation is enabled
-  const [currentDayIndex, setCurrentDayIndex] = useState(day);
+  const [currentDayIndex, setCurrentDayIndex] = useState(day)
 
   // Generate simulation data
   const daysData = useMemo(
     () => simulateDays(100, lambda, delta, seed),
-    [lambda, delta, seed]
-  );
+    [lambda, delta, seed],
+  )
 
   // Get the specific day (clamp to valid range)
-  const dayIndex = Math.max(0, Math.min(currentDayIndex, daysData.length - 1));
-  const selectedDay = daysData[dayIndex];
+  const dayIndex = Math.max(0, Math.min(currentDayIndex, daysData.length - 1))
+  const selectedDay = daysData[dayIndex]
 
-  const hasPrev = dayIndex > 0;
-  const hasNext = dayIndex < daysData.length - 1;
+  const hasPrev = dayIndex > 0
+  const hasNext = dayIndex < daysData.length - 1
 
   // Navigation handlers
   const handleBack = () => {
     // In embedded context, "back" button is hidden/disabled
-  };
+  }
 
   const handleNext = () => {
     if (hasNext) {
-      setCurrentDayIndex(dayIndex + 1);
+      setCurrentDayIndex(dayIndex + 1)
     }
-  };
+  }
 
   const handlePrev = () => {
     if (hasPrev) {
-      setCurrentDayIndex(dayIndex - 1);
+      setCurrentDayIndex(dayIndex - 1)
     }
-  };
+  }
 
   return (
     <div className="w-full">
@@ -84,5 +84,5 @@ export function DayDetailEmbed({
         showNavigation={showNavigation}
       />
     </div>
-  );
+  )
 }

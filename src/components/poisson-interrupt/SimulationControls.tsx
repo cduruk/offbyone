@@ -1,17 +1,17 @@
-import React from "react";
-import { ControlSlider } from "./ControlSlider";
-import { ImpactAnalysis } from "./ImpactAnalysis";
-import { PERSONAS } from "@/components/poisson-interrupt/constants";
-import { H3 } from "./Typography";
-import { Button } from "@/components/ui/button";
+import React from 'react'
+import { ControlSlider } from './ControlSlider'
+import { ImpactAnalysis } from './ImpactAnalysis'
+import { PERSONAS } from '@/components/poisson-interrupt/constants'
+import { H3 } from './Typography'
+import { Button } from '@/components/ui/button'
 
 interface SimulationControlsProps {
-  selectedPersonaId: string;
-  lambda: number;
-  recovery: number;
-  onPersonaSelect: (id: string) => void;
-  onLambdaChange: (val: number) => void;
-  onRecoveryChange: (val: number) => void;
+  selectedPersonaId: string
+  lambda: number
+  recovery: number
+  onPersonaSelect: (id: string) => void
+  onLambdaChange: (val: number) => void
+  onRecoveryChange: (val: number) => void
 }
 
 export const SimulationControls: React.FC<SimulationControlsProps> = ({
@@ -23,46 +23,46 @@ export const SimulationControls: React.FC<SimulationControlsProps> = ({
   onRecoveryChange,
 }) => {
   return (
-    <div className="p-6 border-b border-gray-200 bg-amber-50/50 border-l-4 border-l-amber-500/40">
+    <div className="border-b border-l-4 border-gray-200 border-l-amber-500/40 bg-amber-50/50 p-6">
       {/* Persona Grid */}
       <div>
-        <div className="flex justify-between items-baseline mb-4">
+        <div className="mb-4 flex items-baseline justify-between">
           <H3>Define Your Environment</H3>
-          <span className="text-xs text-gray-500 hidden sm:inline">
+          <span className="hidden text-xs text-gray-500 sm:inline">
             Choose a persona or adjust parameters
           </span>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
           {PERSONAS.map((p) => (
             <Button
               key={p.id}
               variant="outline"
               onClick={() => onPersonaSelect(p.id)}
-              className={`relative flex flex-col items-center p-3 h-auto rounded-sm border-2 text-center transition-all duration-200 ${
+              className={`relative flex h-auto flex-col items-center rounded-sm border-2 p-3 text-center transition-all duration-200 ${
                 selectedPersonaId === p.id
-                  ? "border-gray-900 bg-gray-100 ring-1 ring-gray-900/15"
-                  : "border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50 hover:shadow-sm"
+                  ? 'border-gray-900 bg-gray-100 ring-1 ring-gray-900/15'
+                  : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50 hover:shadow-sm'
               }`}
             >
               <div
-                className={`p-1.5 rounded-sm mb-2 ${selectedPersonaId === p.id ? "bg-gray-200 text-gray-900" : "bg-gray-200 text-gray-500"}`}
+                className={`mb-2 rounded-sm p-1.5 ${selectedPersonaId === p.id ? 'bg-gray-200 text-gray-900' : 'bg-gray-200 text-gray-500'}`}
               >
                 <p.icon size={20} strokeWidth={2} />
               </div>
-              <div className="font-bold text-xs text-gray-900">{p.label}</div>
+              <div className="text-xs font-bold text-gray-900">{p.label}</div>
             </Button>
           ))}
         </div>
       </div>
 
       {/* Parameters Section - Always Visible */}
-      <div className="mt-6 pt-6 border-t border-gray-200 relative">
-        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 px-3 py-0.5 bg-white text-[10px] text-gray-500 font-medium uppercase tracking-wide">
+      <div className="relative mt-6 border-t border-gray-200 pt-6">
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 transform bg-white px-3 py-0.5 text-[10px] font-medium tracking-wide text-gray-500 uppercase">
           Parameters
         </div>
 
-        <div className="flex flex-col md:flex-row gap-6">
+        <div className="flex flex-col gap-6 md:flex-row">
           {/* Sliders */}
           <div className="flex-1 space-y-4">
             <ControlSlider
@@ -91,5 +91,5 @@ export const SimulationControls: React.FC<SimulationControlsProps> = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
