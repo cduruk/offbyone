@@ -1,0 +1,23 @@
+/* SVG/Chart colors for Poisson interruption visualizations */
+
+:root {
+  --svg-slate-50: #f8fafc;
+  --svg-slate-100: #f1f5f9;
+  --svg-slate-200: #e2e8f0;
+  --svg-slate-300: #cbd5e1;
+  --svg-slate-500: #64748b;
+  --svg-blue-50: #f0f9ff;
+  --svg-indigo-500: #6366f1;
+  --svg-red-500: #ef4444;
+}
+
+[data-theme='dark'] {
+  --svg-slate-50: #0f172a;
+  --svg-slate-100: #1e293b;
+  --svg-slate-200: #334155;
+  --svg-slate-300: #94a3b8; /* Lighter for better contrast in hatched patterns */
+  --svg-slate-500: #94a3b8;
+  --svg-blue-50: #1e3a8a;
+  --svg-indigo-500: #818cf8;
+  --svg-red-500: #ef4444;
+}
