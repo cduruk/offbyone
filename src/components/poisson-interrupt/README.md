@@ -163,6 +163,7 @@ You set a threshold (30, 45, or 60 min) and target number of blocks per day. The
    ```
 
 4. Open in your browser:
+
    - **100-Day Simulation:** [http://localhost:3000](http://localhost:3000)
    - **Focus Blocks Heatmap:** [http://localhost:3000/graph](http://localhost:3000/graph)
    - **Embedding Demo:** [http://localhost:3000/demo](http://localhost:3000/demo)
@@ -283,12 +284,14 @@ Both routes are independently usable and can be embedded in other applications.
 This project provides embeddable React components that can be integrated into other websites and applications:
 
 **Embeddable Components:**
+
 - **`DaysGridEmbed`** - Standalone 100-day simulation grid
 - **`DayDetailEmbed`** - Single day timeline view
 - **`FocusBlocksHeatmapEmbed`** - Parameter space heatmap
 - **`EmbedDemo`** - Demonstration page showing all embed components
 
 **How to Use:**
+
 1. Visit `/demo` to see all embeddable components in action
 2. Each component accepts simulation parameters as props
 3. Components are self-contained with no external dependencies

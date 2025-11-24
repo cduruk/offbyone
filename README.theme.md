@@ -59,19 +59,19 @@ Below are some fantastic examples of websites based on this template. If you wis
 
 ## Repository Structure at a Glance
 
-| Area | Purpose |
-| ---- | ------- |
-| `src/consts.ts` | Centralizes site metadata, navigation, social links, and an icon lookup map for consistent branding across the site. |
-| `src/content.config.ts` | Declares Astro content collections for blog posts, authors, and projects with Zod schemas that validate frontmatter. |
-| `src/content/` | Houses MDX and Markdown content grouped by collection; the README inside explains required frontmatter fields. |
-| `src/layouts/Layout.astro` | Provides the global page shell, wiring shared CSS, header, footer, and optional slots for head metadata, navigation, and TOCs. |
-| `src/components/` | Astro components for site chrome (header, footer, breadcrumbs, cards, callouts) that consume data from `consts.ts` and lib helpers. |
-| `src/components/ui/` | Reusable React components powered by class-variance-authority and the shared `cn` helper for consistent styling. |
-| `src/lib/` | Data and formatting utilities—including loaders for posts/authors/tags, reading-time calculations, TOC builders, and date helpers. |
-| `src/pages/` | File-based routes that fetch content through the lib helpers, render Astro/React components, and slot optional sidebars. |
-| `src/styles/global.css` | Tailwind 4 setup with Flexoki-inspired tokens, font imports, and light/dark theme variables. |
-| `public/` | Static assets such as favicons, fonts, OG fallbacks, and showcase imagery. |
-| `scripts/` | TypeScript automation for generating posts, favicons, OG images, and other design assets (see `scripts/README.md`). |
+| Area                       | Purpose                                                                                                                             |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `src/consts.ts`            | Centralizes site metadata, navigation, social links, and an icon lookup map for consistent branding across the site.                |
+| `src/content.config.ts`    | Declares Astro content collections for blog posts, authors, and projects with Zod schemas that validate frontmatter.                |
+| `src/content/`             | Houses MDX and Markdown content grouped by collection; the README inside explains required frontmatter fields.                      |
+| `src/layouts/Layout.astro` | Provides the global page shell, wiring shared CSS, header, footer, and optional slots for head metadata, navigation, and TOCs.      |
+| `src/components/`          | Astro components for site chrome (header, footer, breadcrumbs, cards, callouts) that consume data from `consts.ts` and lib helpers. |
+| `src/components/ui/`       | Reusable React components powered by class-variance-authority and the shared `cn` helper for consistent styling.                    |
+| `src/lib/`                 | Data and formatting utilities—including loaders for posts/authors/tags, reading-time calculations, TOC builders, and date helpers.  |
+| `src/pages/`               | File-based routes that fetch content through the lib helpers, render Astro/React components, and slot optional sidebars.            |
+| `src/styles/global.css`    | Tailwind 4 setup with Flexoki-inspired tokens, font imports, and light/dark theme variables.                                        |
+| `public/`                  | Static assets such as favicons, fonts, OG fallbacks, and showcase imagery.                                                          |
+| `scripts/`                 | TypeScript automation for generating posts, favicons, OG images, and other design assets (see `scripts/README.md`).                 |
 
 ## How the Pieces Fit Together
 

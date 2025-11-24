@@ -68,14 +68,14 @@ npm install @radix-ui/react-slider @radix-ui/react-slot @radix-ui/react-toggle @
 
 ```mdx
 ---
-title: "The Fragmentation of Time"
-description: "How interruptions destroy deep work capacity"
-publishDate: "2025-01-XX"
+title: 'The Fragmentation of Time'
+description: 'How interruptions destroy deep work capacity'
+publishDate: '2025-01-XX'
 ---
 
-import { DaysGridEmbed } from "~/components/poisson-interrupt/DaysGridEmbed";
-import { DayDetailEmbed } from "~/components/poisson-interrupt/DayDetailEmbed";
-import '~/styles/poisson-visualizations.css';
+import { DaysGridEmbed } from '~/components/poisson-interrupt/DaysGridEmbed'
+import { DayDetailEmbed } from '~/components/poisson-interrupt/DayDetailEmbed'
+import '~/styles/poisson-visualizations.css'
 
 Your introduction text here...
 
@@ -151,12 +151,14 @@ The components fully support dark mode via CSS custom properties defined in `poi
 ### What's Included
 
 **Automatic Theme Adaptation:**
+
 - SVG text colors adapt to light/dark backgrounds
 - Hatched patterns use lighter colors in dark mode for visibility
 - Text shadows are adaptive (white in light mode, black in dark mode)
 - All color transitions match your site's theme switcher
 
 **CSS Variables Used:**
+
 ```css
 /* Light mode */
 :root {
@@ -171,7 +173,7 @@ The components fully support dark mode via CSS custom properties defined in `poi
 [data-theme='dark'] {
   --svg-slate-50: #0f172a;
   --svg-slate-100: #1e293b;
-  --svg-slate-300: #94a3b8;  /* Notably lighter than light mode */
+  --svg-slate-300: #94a3b8; /* Notably lighter than light mode */
   --svg-slate-500: #94a3b8;
   /* ... more colors */
 }
@@ -226,7 +228,7 @@ The app provides three embeddable components, each designed for different use ca
 **Usage Example:**
 
 ```mdx
-import { FocusBlocksHeatmapEmbed } from "~/components/poisson-interrupt/FocusBlocksHeatmapEmbed";
+import { FocusBlocksHeatmapEmbed } from '~/components/poisson-interrupt/FocusBlocksHeatmapEmbed'
 
 <FocusBlocksHeatmapEmbed
   threshold={45}
@@ -323,12 +325,12 @@ Here's how you might use multiple components in a blog post about maker vs manag
 
 ```mdx
 ---
-title: "Maker Schedule vs Manager Schedule"
-publishDate: "2025-01-15"
+title: 'Maker Schedule vs Manager Schedule'
+publishDate: '2025-01-15'
 ---
 
-import { DaysGridEmbed } from "~/components/poisson-interrupt/DaysGridEmbed";
-import { FocusBlocksHeatmapEmbed } from "~/components/poisson-interrupt/FocusBlocksHeatmapEmbed";
+import { DaysGridEmbed } from '~/components/poisson-interrupt/DaysGridEmbed'
+import { FocusBlocksHeatmapEmbed } from '~/components/poisson-interrupt/FocusBlocksHeatmapEmbed'
 
 ## The Problem with Context Switching
 
@@ -458,13 +460,13 @@ Since you're moving files, update the `@/` alias imports in all copied component
 **Before:**
 
 ```typescript
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button'
 ```
 
 **After:**
 
 ```typescript
-import { Button } from "~/components/ui/button";
+import { Button } from '~/components/ui/button'
 ```
 
 (Assuming your Astro blog uses `~` as the alias - check your `tsconfig.json`)
@@ -525,22 +527,22 @@ If you want the visualizer to have its own theme without affecting your blog's g
 
 ```tsx
 // src/components/poisson-interrupt/PoissonInterruptWrapper.tsx
-import PoissonInterruptionsGrid from "./PoissonInterruptionsGrid";
-import "./poisson-theme.css";
+import PoissonInterruptionsGrid from './PoissonInterruptionsGrid'
+import './poisson-theme.css'
 
 export default function PoissonInterruptWrapper() {
   return (
     <div className="poisson-interrupt-scope">
       <PoissonInterruptionsGrid />
     </div>
-  );
+  )
 }
 ```
 
 **3. Use the wrapper in your MDX:**
 
 ```mdx
-import PoissonInterruptWrapper from "~/components/poisson-interrupt/PoissonInterruptWrapper";
+import PoissonInterruptWrapper from '~/components/poisson-interrupt/PoissonInterruptWrapper'
 
 <PoissonInterruptWrapper client:load />
 ```
@@ -621,13 +623,13 @@ mkdir -p /path/to/offbyone/src/content/blog/poisson-interruption-visualizer
 
 ```mdx
 ---
-title: "Poisson Interruption Visualizer"
-description: "See how random interruptions fragment your deep work time"
-publishDate: "2025-01-XX"
-tags: ["productivity", "interactive", "data-visualization"]
+title: 'Poisson Interruption Visualizer'
+description: 'See how random interruptions fragment your deep work time'
+publishDate: '2025-01-XX'
+tags: ['productivity', 'interactive', 'data-visualization']
 ---
 
-import PoissonInterruptionsGrid from "~/components/poisson-interrupt/PoissonInterruptionsGrid";
+import PoissonInterruptionsGrid from '~/components/poisson-interrupt/PoissonInterruptionsGrid'
 
 Your introduction text here...
 
@@ -768,16 +770,18 @@ These components generate simulation data internally based on the props you prov
 
 1. **Verify CSS file is imported** - Most common issue!
    ```mdx
-   import '~/styles/poisson-visualizations.css';  // Don't forget this!
+   import '~/styles/poisson-visualizations.css' // Don't forget this
+
+   !
    ```
 2. Verify CSS variables are defined in `poisson-visualizations.css`
 3. Check that Tailwind is processing the component files
 4. Add component paths to your `tailwind.config.ts`:
    ```js
    content: [
-     "./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}",
-     "./src/components/poisson-interrupt/**/*.tsx", // Add this
-   ];
+     './src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}',
+     './src/components/poisson-interrupt/**/*.tsx', // Add this
+   ]
    ```
 
 ### Dark Mode Issues
@@ -788,6 +792,7 @@ These components generate simulation data internally based on the props you prov
 
 1. Verify `[data-theme='dark']` selector matches your blog's dark mode implementation
 2. If your blog uses `.dark` class instead, update `poisson-visualizations.css`:
+
    ```css
    /* Change from */
    [data-theme='dark'] { ... }
@@ -795,6 +800,7 @@ These components generate simulation data internally based on the props you prov
    /* To */
    .dark { ... }
    ```
+
 3. Test that your theme switcher properly toggles the class/attribute
 4. Check browser console for CSS variable errors
 
