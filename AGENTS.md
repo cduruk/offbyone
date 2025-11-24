@@ -151,3 +151,171 @@ After making grammar fixes:
 - The build process automatically runs `generate-og-images` before `astro check` and `astro build`.
 - Always run `npm run build` to verify changes don't break the build pipeline.
 - Check the build output for any errors or warnings before committing.
+
+## Interactive Tools & React Component Embedding
+
+### Creating Standalone Tool Pages
+
+Interactive tools should live under `/tools/` directory with proper navigation structure:
+
+**Directory Structure:**
+```
+src/pages/tools/
+├── index.astro           # Landing page listing all tools
+├── interruptions.astro   # Individual tool page
+└── hiring-pipeline.astro # Another tool page
+```
+
+**Tool Page Pattern:**
+```astro
+---
+import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import PageHead from '@/components/PageHead.astro'
+import Layout from '@/layouts/Layout.astro'
+import { YourReactComponent } from '@/components/your-tool/YourReactComponent'
+import '@/styles/your-tool.css'  // Tool-specific styles
+---
+
+<Layout class="max-w-5xl">
+  <PageHead
+    slot="head"
+    title="Your Tool Name"
+    description="Tool description"
+    ogImage="/static/og/about.png"
+  />
+  <Breadcrumbs
+    items={[
+      { href: '/tools/', label: 'Tools', icon: 'lucide:wrench' },
+      { label: 'Your Tool Name', icon: 'lucide:activity' }
+    ]}
+  />
+
+  <section>
+    <div class="prose mb-8">
+      <h1>Tool Title</h1>
+      <p>Introductory text</p>
+    </div>
+
+    <div class="not-prose">
+      <YourReactComponent client:load />
+    </div>
+  </section>
+</Layout>
+```
+
+### Embedding React Components in MDX
+
+React components can be embedded in blog posts with proper hydration directives:
+
+```mdx
+---
+title: "Your Post Title"
+description: "Post description"
+---
+
+import { YourReactComponent } from '@/components/your-tool/YourReactComponent'
+import '@/styles/your-tool.css'
+
+## Introduction
+
+Your content here...
+
+<div class="not-prose">
+  <YourReactComponent
+    param1={value1}
+    param2={value2}
+    client:load
+  />
+</div>
+
+More content...
+```
+
+**Hydration Directives:**
+- `client:load` - Load immediately on page load (for critical components)
+- `client:idle` - Load after page is interactive (better for performance)
+- `client:visible` - Load when component enters viewport
+
+### CSS Organization for Tools
+
+When creating interactive tools with custom styling:
+
+**When to create separate CSS files:**
+- Tool uses CSS custom properties not needed elsewhere
+- Tool has significant styling that would clutter global.css
+- Tool might be reused across multiple pages
+- Tool needs scoped color schemes or theme variables
+
+**Pattern:**
+1. Create `/src/styles/tool-name.css` with tool-specific variables
+2. Import in both the standalone tool page AND blog posts that embed it
+3. Remove tool-specific variables from global.css
+
+**Example:**
+```css
+/* src/styles/poisson-visualizations.css */
+:root {
+  --svg-slate-50: #f8fafc;
+  --svg-slate-100: #f1f5f9;
+  --svg-slate-300: #cbd5e1;
+}
+
+[data-theme='dark'] {
+  --svg-slate-50: #0f172a;
+  --svg-slate-100: #1e293b;
+  --svg-slate-300: #94a3b8; /* Lighter for better contrast */
+}
+```
+
+### Dark Mode for SVG Visualizations
+
+SVG elements require special handling for dark mode compatibility:
+
+**SVG Text Readability:**
+```tsx
+// Adaptive fill colors for text
+<text
+  className="fill-gray-600 dark:fill-gray-100 font-bold"
+>
+  Text content
+</text>
+
+// Adaptive text shadows (white in light mode, black in dark mode)
+<text
+  className="fill-gray-600 dark:fill-gray-100 [text-shadow:0_0_2px_rgba(255,255,255,0.9)] dark:[text-shadow:0_0_2px_rgba(0,0,0,0.9)]"
+>
+  Text with shadow
+</text>
+```
+
+**Key Principles:**
+- Use medium gray (`gray-600`) for light mode text, not dark gray (`gray-900`)
+- Use light gray (`gray-100`) for dark mode text for high contrast
+- Keep text shadow blur radius small (2px) for crisp readability
+- Make shadows adaptive: white shadows in light mode help against busy backgrounds, black shadows in dark mode
+- Use `font-bold` or `font-semibold` to improve base visibility
+
+**SVG Pattern & Shape Colors:**
+```css
+/* Hatched patterns need lighter colors in dark mode */
+:root {
+  --svg-slate-300: #cbd5e1;  /* Medium gray for light mode */
+}
+
+[data-theme='dark'] {
+  --svg-slate-300: #94a3b8;  /* Lighter gray for dark mode contrast */
+}
+```
+
+**Common Issues & Solutions:**
+- **Text too dark in light mode**: Use `fill-gray-600` instead of `fill-gray-900`
+- **Text invisible in dark mode**: Use `dark:fill-gray-100` for high contrast
+- **Glowing effect**: Reduce shadow blur from 6px to 2px and lower opacity
+- **Hatched patterns invisible**: Lighten pattern stroke color in dark mode using CSS variables
+
+**Testing Dark Mode:**
+Always test visualizations in both light and dark modes before committing:
+```bash
+# Toggle dark mode in browser DevTools or system settings
+# Verify text readability, pattern visibility, and color contrast
+```

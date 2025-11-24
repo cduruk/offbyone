@@ -43,7 +43,18 @@ find /path/to/your-blog/src/components/poisson-interrupt -type f -name "*.tsx" \
   -exec sed -i '' 's/@\/lib/~\/lib\/poisson-interrupt/g' {} +
 ```
 
-### Step 3: Install Dependencies
+### Step 3: Copy Styles
+
+Copy the visualization-specific CSS file:
+
+```bash
+# Copy styles
+cp /path/to/poisson-interrupt/styles/poisson-visualizations.css /path/to/your-blog/src/styles/
+```
+
+This file contains CSS custom properties for SVG visualizations with dark mode support.
+
+### Step 4: Install Dependencies
 
 Ensure your blog has these dependencies (likely already installed if you use Shadcn):
 
@@ -51,7 +62,9 @@ Ensure your blog has these dependencies (likely already installed if you use Sha
 npm install @radix-ui/react-slider @radix-ui/react-slot @radix-ui/react-toggle @radix-ui/react-toggle-group lucide-react clsx tailwind-merge class-variance-authority
 ```
 
-### Step 4: Use in Your MDX Files
+### Step 5: Use in Your MDX Files
+
+**IMPORTANT:** Always import the CSS file in pages/posts that use the visualizations:
 
 ```mdx
 ---
@@ -62,6 +75,7 @@ publishDate: "2025-01-XX"
 
 import { DaysGridEmbed } from "~/components/poisson-interrupt/DaysGridEmbed";
 import { DayDetailEmbed } from "~/components/poisson-interrupt/DayDetailEmbed";
+import '~/styles/poisson-visualizations.css';
 
 Your introduction text here...
 
@@ -127,6 +141,52 @@ A number that makes the simulation reproducible. Using the same seed with the sa
 
 - Use consistent seeds for blog posts (readers see the same visualization)
 - Change seeds to explore variation in outcomes
+
+---
+
+## Dark Mode Support
+
+The components fully support dark mode via CSS custom properties defined in `poisson-visualizations.css`.
+
+### What's Included
+
+**Automatic Theme Adaptation:**
+- SVG text colors adapt to light/dark backgrounds
+- Hatched patterns use lighter colors in dark mode for visibility
+- Text shadows are adaptive (white in light mode, black in dark mode)
+- All color transitions match your site's theme switcher
+
+**CSS Variables Used:**
+```css
+/* Light mode */
+:root {
+  --svg-slate-50: #f8fafc;
+  --svg-slate-100: #f1f5f9;
+  --svg-slate-300: #cbd5e1;
+  --svg-slate-500: #64748b;
+  /* ... more colors */
+}
+
+/* Dark mode - lighter colors for contrast */
+[data-theme='dark'] {
+  --svg-slate-50: #0f172a;
+  --svg-slate-100: #1e293b;
+  --svg-slate-300: #94a3b8;  /* Notably lighter than light mode */
+  --svg-slate-500: #94a3b8;
+  /* ... more colors */
+}
+```
+
+### Customizing Colors
+
+To match your blog's theme, edit `poisson-visualizations.css`:
+
+1. Adjust color values while maintaining light/dark contrast
+2. Keep dark mode colors lighter than light mode for hatched patterns
+3. Test both modes to ensure readability
+4. Text should use `fill-gray-600` in light mode, `fill-gray-100` in dark mode
+
+**Note:** The components expect your blog to use `[data-theme='dark']` for dark mode detection. If your blog uses a different approach (e.g., `.dark` class), update the CSS selectors accordingly.
 
 ---
 
@@ -245,7 +305,11 @@ lib/
   simulation.ts           # Core simulation logic
   constants.ts            # Color definitions
   utils.ts                # Helper functions
+styles/
+  poisson-visualizations.css  # CSS custom properties for SVG (REQUIRED)
 ```
+
+**IMPORTANT:** The `poisson-visualizations.css` file is required and must be imported in any page/post that uses the components.
 
 ### Full App Integration
 
@@ -702,15 +766,37 @@ These components generate simulation data internally based on the props you prov
 
 **Solution:**
 
-1. Verify CSS variables are defined (see Advanced section, Option C)
-2. Check that Tailwind is processing the component files
-3. Add component paths to your `tailwind.config.ts`:
+1. **Verify CSS file is imported** - Most common issue!
+   ```mdx
+   import '~/styles/poisson-visualizations.css';  // Don't forget this!
+   ```
+2. Verify CSS variables are defined in `poisson-visualizations.css`
+3. Check that Tailwind is processing the component files
+4. Add component paths to your `tailwind.config.ts`:
    ```js
    content: [
      "./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}",
      "./src/components/poisson-interrupt/**/*.tsx", // Add this
    ];
    ```
+
+### Dark Mode Issues
+
+**Problem:** Components look fine in light mode but broken in dark mode (or vice versa).
+
+**Solution:**
+
+1. Verify `[data-theme='dark']` selector matches your blog's dark mode implementation
+2. If your blog uses `.dark` class instead, update `poisson-visualizations.css`:
+   ```css
+   /* Change from */
+   [data-theme='dark'] { ... }
+
+   /* To */
+   .dark { ... }
+   ```
+3. Test that your theme switcher properly toggles the class/attribute
+4. Check browser console for CSS variable errors
 
 ### TypeScript Errors After Copying Files
 
