@@ -26,7 +26,7 @@ I got tired of that. So I built a model.
 
 In this post, I'm going to show you what interruption-driven work actually looks like when you model it with math. We'll start by drawing a single day as a timeline—interruptions, recovery periods, and the fragments of focus time that remain. Then I'll show you the three simple parameters that determine whether your day is productive or a write-off. We'll simulate hundreds of days under the same conditions, and we'll build a map of the entire parameter space so you can see exactly where you are and what happens when you try to move to better territory.
 
-By the end, you'll stop thinking of "bad days" as mysterious vibes and start seeing them as the predictable output of a system you can actually reason about—and change. Or not! But maybe?
+By the end, you'll stop thinking of "bad days" as mysterious vibes and start seeing them as the predictable output of a system you can actually reason about—and change.
 
 ## One Day in Detail
 
@@ -55,8 +55,6 @@ So, how can we begin to understand this day if we want to fix it? In our model, 
 | λ (lambda) | How often you get interrupted                    | per hour |
 | Δ (delta)  | How long to regain focus after each interruption | minutes  |
 | θ (theta)  | Minimum block size for meaningful work           | minutes  |
-
-A lot to unpack here, as they say.
 
 **λ (lambda): How often the world is allowed to bother you.**
 
@@ -184,7 +182,7 @@ But it's not broken. Here's what a single day at these parameters actually looks
   />
 </div>
 
-Now you can see why the grid appears uniformly gray. There's simply no focus time, even under 15 minutes. The day view is a dense wall of red interruptions, each triggering a gray recovery period. The tiny slivers of green focus time are too short to even render at the grid scale (and in fact was causing a bug in the rendering). When you zoom out to 100 days, every single day looks like this. All days are dim.
+Now you can see why the grid appears uniformly gray. There's simply no focus time, even under 15 minutes. The day view is a dense wall of red interruptions, each triggering a gray recovery period. The tiny slivers of green focus time are too short to even render at the grid scale. When you zoom out to 100 days, every single day looks like this. All days are dim.
 
 This is a crisis. Bailey et al. measured λ = 15 for general knowledge workers. Microsoft reports λ = 30 for heavy collaborators. These researchers are describing millions of people's actual working conditions. And at these parameters, the math is unambiguous: deep work is statistically near-impossible. We've normalized an environment where focus has been engineered out of the workday, and we're surprised when people can't think.
 
@@ -240,7 +238,7 @@ Yet, it's also possible to have a very bad day with a lot of interruptions with 
 
 So far we've fixed the knobs (λ, Δ, θ) and watched the random outcomes (individual days, grids of 100 days). Now let's see what happens when we actually turn those knobs—when we vary λ and Δ systematically and measure the result.
 
-That's what a parameter-space heatmap does. It's a map (duh!). On one axis, we have λ (interruptions per hour). The other axis is Δ (recovery minutes). Each cell represents a specific (λ, Δ) combination, and the color shows the expected capacity (number of θ-minute blocks per day). Dark purple cells are hospitable to deep work. Light purple cells are bad—you're lucky to get even one θ-block per day.
+That's what a parameter-space heatmap does. On one axis, we have λ (interruptions per hour). The other axis is Δ (recovery minutes). Each cell represents a specific (λ, Δ) combination, and the color shows the expected capacity (number of θ-minute blocks per day). Dark purple cells are hospitable to deep work. Light purple cells are bad—you're lucky to get even one θ-block per day.
 
 Here's the map, with a threshold control that lets you toggle θ between 30, 45, and 60 minutes. I've highlighted three specific cells with color-coded borders:
 
