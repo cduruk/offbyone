@@ -55,23 +55,32 @@ Off by One is Can Duruk's home on the internet for long-form essays about engine
 
    Visit <http://localhost:1234> to browse the site locally. Astro's file-based routing automatically rebuilds pages when you edit content or components.
 
-3. Before submitting a pull request, run the production build to ensure content validation, OG generation, and type checking all pass:
+3. Run linting and formatting to ensure code quality:
+
+   ```bash
+   npm run lint        # Check for code quality issues
+   npm run lint:fix    # Auto-fix linting issues
+   npm run format      # Format code with Prettier
+   npm run format:check # Check formatting without modifying files
+   ```
+
+   The project uses ESLint 9 (flat config) for code quality checks and Prettier for formatting. Both tools are configured to work with TypeScript, React, and Astro files.
+
+4. Before submitting a pull request, run the production build to ensure linting, content validation, OG generation, and type checking all pass:
 
    ```bash
    npm run build
    ```
 
-   The build output lives in `dist/`; Astro will surface frontmatter or MDX errors directly in the console.
+   The build process automatically runs `npm run lint` first, then generates OG images, runs Astro type checking, and builds the site. The build output lives in `dist/`; Astro will surface frontmatter or MDX errors directly in the console.
 
-4. Run tests to verify utility functions and ensure code quality:
+5. Run tests to verify utility functions and ensure code quality:
 
    ```bash
    npm test          # Watch mode for development
    npm run test:run  # Single run for CI/CD
    npm run test:ui   # Interactive UI mode
    ```
-
-5. Optional but recommended: run targeted scripts when touching associated areas, for example `npm run lint` or `npm run check`.
 
 ## Publishing new writing
 

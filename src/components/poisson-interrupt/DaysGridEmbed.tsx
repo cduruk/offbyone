@@ -51,9 +51,8 @@ export function DaysGridEmbed({
   const handleSelectDay = (dayIndex: number) => {
     if (onSelectDay) {
       onSelectDay(dayIndex)
-    } else {
-      console.log(`Day ${dayIndex} selected`)
     }
+    // No-op if onSelectDay is not provided
   }
 
   return (

@@ -6,6 +6,39 @@
 - Prefer fenced code blocks with explicit language identifiers when adding examples.
 - Run available package scripts (e.g., `npm run build`, `npm run lint`) before claiming tests have passed.
 
+## Code Quality & Linting
+
+**Project uses ESLint 9 (flat config) + Prettier:**
+
+- **ESLint** handles code quality checks (unused variables, best practices, potential bugs)
+- **Prettier** handles code formatting (indentation, quotes, semicolons)
+- **Astro check** handles TypeScript type checking
+
+**When to run linting:**
+
+1. **Before commits**: Run `npm run lint:fix` to auto-fix issues and `npm run format` to format code
+2. **After major changes**: Run `npm run lint` to check for issues without modifying files
+3. **Before PRs**: The build process (`npm run build`) automatically runs linting first
+4. **During development**: Configure your editor to show ESLint warnings in real-time
+
+**Fixing lint errors:**
+
+- Most issues can be auto-fixed with `npm run lint:fix`
+- For warnings about unused variables, prefix with `_` (e.g., `_unusedVar`)
+- For legitimate cases requiring rule exceptions, use inline comments:
+  ```ts
+  // eslint-disable-next-line rule-name
+  const value = someCode()
+  ```
+- Avoid disabling rules globally unless absolutely necessary
+
+**Configuration:**
+
+- ESLint config: `eslint.config.js` (flat config format)
+- Prettier config: embedded in `package.json`
+- Rules are configured for TypeScript, React, and Astro files
+- Type definition files (`.d.ts`) and config files have more lenient rules
+
 ## Git Workflow
 
 **Always work on a new branch and create a PR:**

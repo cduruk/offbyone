@@ -260,7 +260,7 @@ async function main(): Promise<void> {
   while (!title) {
     try {
       title = (await question('Post title: ')).trim()
-    } catch (error) {
+    } catch (_) {
       console.error(
         '❌ Title is required. Provide it with --title when running non-interactively.',
       )
@@ -295,7 +295,7 @@ async function main(): Promise<void> {
   while (!description) {
     try {
       description = (await question('Description: ')).trim()
-    } catch (error) {
+    } catch (_) {
       console.error(
         '❌ Description is required. Provide it with --description when running non-interactively.',
       )
