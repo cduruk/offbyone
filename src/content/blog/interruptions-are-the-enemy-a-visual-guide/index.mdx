@@ -16,17 +16,21 @@ import '@/styles/poisson-visualizations.css'
 
 ## Introduction
 
-Your calendar looks reasonable—three meetings, all legitimate. You block out the rest for "focus time." But by 4pm, you realize you've accomplished almost nothing. The day was a blur: a Slack DM here, an "urgent" email there, someone swinging by your desk with "got a minute?", a quick question that balloons into fifteen minutes of context-switching. You meant to make real progress on that hard problem, but somehow you never found a solid two-hour window. Or even a solid hour. You feel guilty, scattered, like you've lost the ability to focus the way you used to.
+When was the last time you had a good day of work? The kind where you felt like you actually made progress on something hard, where you got into flow and stayed there long enough to think deeply about a problem?
 
-Here's the thing: you're not broken, and you're not uniquely undisciplined. You're operating in a system where the math is working against you. Every interruption costs more than the two minutes it takes to answer the question—it fractures your attention, forces a recovery period, and eats into the continuous blocks of time that real work demands. When interruptions come frequently enough and recovery takes long enough, deep work doesn't just get harder—it becomes statistically rare.
+Paul Graham wrote about this back in 2009 in ["Maker's Schedule, Manager's Schedule"](http://www.paulgraham.com/makersschedule.html). He explained how a single meeting can wreck an entire half-day for someone who needs uninterrupted time to build something. That was 15 years ago, and the problem has only gotten worse. We've added Slack, Teams, always-on video calls, "quick syncs," and a culture of instant responsiveness that treats every message like it deserves an immediate reply.
 
-In this post, I'm going to show you what that system actually looks like. We'll start by drawing a single day on a timeline: the interruptions, the recovery periods, the fragments of focus time that remain. Then we'll reveal the three simple parameters that determine whether your day is productive or a write-off. We'll see what happens when we simulate hundreds of days under the same conditions, and we'll build a map that shows you where you are and how to move to better territory.
+And yet, when people complain about this—when they say they can't focus anymore, that they're constantly interrupted, that their days feel like chaos—the conversation stays frustratingly vague. We know it's bad, but we can't say _how_ bad. We can't quantify what's happening or predict what would happen if things changed. We're stuck arguing about vibes instead of facts.
 
-By the end, you'll stop thinking of "bad days" as mysterious vibes and start seeing them as the predictable output of a system you can actually reason about—and change.
+I got tired of that. So I built a model.
+
+In this post, I'm going to show you what interruption-driven work actually looks like when you model it with math. We'll start by drawing a single day as a timeline—interruptions, recovery periods, and the fragments of focus time that remain. Then I'll show you the three simple parameters that determine whether your day is productive or a write-off. We'll simulate hundreds of days under the same conditions, and we'll build a map of the entire parameter space so you can see exactly where you are and what happens when you try to move to better territory.
+
+By the end, you'll stop thinking of "bad days" as mysterious vibes and start seeing them as the predictable output of a system you can actually reason about—and change. Or not! But maybe?
 
 ## One Day in Detail
 
-Let's start by drawing what one of those "lost days" actually looks like. The visualization below shows an 8-hour workday as a timeline. Green and blue segments represent real, uninterrupted focus blocks—the time when you're genuinely working on the problem. Red spikes are interruptions: a Slack ping, a meeting, someone asking a question. The hatched gray zones are recovery time—you're back at your desk, but you're not back _in_ the problem yet. You're reloading context, remembering where you were, trying to rebuild the mental stack you just lost.
+Let's start by drawing what one of those "lost days" actually looks like. The visualization below shows an 8-hour workday as a timeline. Green segments represent real, uninterrupted focus blocks—the time when you're genuinely working on the problem. Red spikes are interruptions: a Slack ping, a meeting, someone asking a question. The hatched gray zones are recovery time—you're back at your desk, but you're not back _in_ the problem yet. You're reloading context, remembering where you were, trying to rebuild the mental stack you just lost.
 
 <div class="not-prose my-8 w-full">
   <DayDetailEmbed
@@ -48,17 +52,15 @@ Let me show you what those numbers are.
 
 ## Three Knobs That Secretly Define Your Day
 
-Every workday—yours, mine, anyone's—can be described by three parameters. Once you know these three numbers, you can predict whether someone's day will be productive or a disaster. More importantly, you can start to see the levers you can actually pull to fix it.
-
 **λ (lambda): How often the world is allowed to bother you.**
 
-Lambda is your interruption rate, measured in interruptions per hour. If λ = 2, that means you're getting interrupted, on average, twice every hour. In the timeline above, lambda determines how many red spikes you see. It's a function of your environment: how many meetings you have, how many Slack channels you're in, how many people feel entitled to "just a quick question," whether your company culture treats every message as urgent.
+Lambda is your interruption rate, measured in interruptions per hour (modeled as a [Poisson process](https://en.wikipedia.org/wiki/Poisson_point_process)). If λ = 2, that means you're getting interrupted, on average, twice every hour. In the timeline above, lambda determines how many red spikes you see. It's a function of your environment: how many meetings you have, how many Slack channels you're in, how many people feel entitled to "just a quick question," whether your company culture treats every message as urgent.
 
 Most people dramatically underestimate their real λ. But we'll ground this in research in a moment.
 
 **Δ (delta): How long your brain sulks after each interruption.**
 
-Delta is your recovery time, in minutes. When someone interrupts you, you don't instantly return to full productivity the moment they walk away. Your brain needs time to reload the context, reconstruct the mental model, remember what you were doing. That's delta. In the timeline, it's the width of those hatched gray bars after every red spike. Even a "quick two-minute question" can cost you 15–20 minutes of recovery time.
+Delta is your recovery time, in minutes. When someone interrupts you, you don't instantly return to full productivity the moment they walk away. Your brain needs time to reload the context, reconstruct the mental model, remember what you were doing. That's delta. In the timeline, it's the width of those hatched gray bars after every red spike. Even a "quick two-minute question" can cost you [15–20 minutes of recovery time](https://ics.uci.edu/~gmark/chi08-mark.pdf).
 
 Delta varies by person and by task. It's shorter if you left yourself good breadcrumbs before the interruption. It's longer if you're doing deep, complex work. But it's never zero.
 
@@ -68,7 +70,7 @@ Theta is the minimum uninterrupted time required for a "unit" of real work. If y
 
 In the timeline, theta is what you're measuring the green blocks against. If theta is 60 minutes and you only have 45-minute blocks, you're not getting any "real" work done by your own standards.
 
-Now, here's the key insight. We can write a simple formula that counts how many units of real work you accomplish in a day. Given all your focus blocks (the green segments), we count how many theta-sized chunks fit:
+Now, here's the key idea. We can write a simple formula that counts how many units of real work you accomplish in a day. Given all your focus blocks (the green segments), we count how many theta-sized chunks fit. You can call this "the capacity" of your day to carry enough blocks for you. The higher the capacity, the more productive you are in a given day.
 
 $$
 C(\theta) = \sum_{i=1}^{n} \left\lfloor \frac{d_i}{\theta} \right\rfloor
@@ -111,7 +113,7 @@ Keep this in mind as we explore the rest of the post. When you see a "typical" (
 
 We've seen one day. But one day can be a fluke—maybe you got lucky, or maybe you got unlucky. What happens if we simulate 100 days with the same λ, Δ, and θ?
 
-That's what the grid below shows. Each square is one simulated 8-hour workday. The color encodes the longest continuous focus block you got that day. Darker, richer colors mean longer focus blocks—those are the good days. Dim, washed-out cells are the bad days, where you never got more than 15–30 minutes of uninterrupted time.
+That's what the grid below shows. Each square is one simulated 8-hour workday. The color encodes the longest continuous focus block you got that day. Darker, richer colors mean longer focus blocks—those are the high-capacity days. Dim, washed-out cells are the low-capacity days, where you never got more than 15–30 minutes of uninterrupted time.
 
 Here's what 100 days look like under relatively harsh conditions: λ = 2.0 (two interruptions per hour), Δ = 20 (20-minute recovery), θ = 60 (you need 60-minute blocks to count as "real work"):
 
@@ -127,7 +129,7 @@ Here's what 100 days look like under relatively harsh conditions: λ = 2.0 (two 
   />
 </div>
 
-Look at the distribution. Many days are dim—barely any focus blocks over 30 minutes. A few days are brighter, but they're rare. This is what it feels like when you say "some weeks, I just can't get anything done." You're not imagining it. Given these parameters, the math makes it structurally difficult to have consistent good days.
+Look at the distribution. Many days are dim—barely any focus blocks over 30 minutes. A few days are brighter, but they're rare. This is what it feels like when you say "some weeks, I just can't get anything done." You're not imagining it. Given these parameters, the math makes it structurally difficult to have consistent high-capacity days.
 
 And remember: λ = 2.0 is _generous_ compared to the research. Bailey et al. report λ ≈ 15 for general knowledge workers. Meyer et al. report λ = 4–6 for developers. Even this "typical" grid is more forgiving than many real-world environments.
 
@@ -191,7 +193,7 @@ This is the core insight: **the variability you experience across days is struct
 
 So far we've fixed the knobs (λ, Δ, θ) and watched the random outcomes (individual days, grids of 100 days). Now let's see what happens when we actually turn those knobs—when we vary λ and Δ systematically and measure the result.
 
-That's what a parameter-space heatmap does. It's a map. One axis is λ (interruptions per hour). The other axis is Δ (recovery minutes). Each cell represents a specific (λ, Δ) combination, and the color shows the expected number of θ-minute blocks per day. Bright yellow/green cells are hospitable to deep work. Dark purple cells are hostile—you're lucky to get even one θ-block per day.
+That's what a parameter-space heatmap does. It's a map. One axis is λ (interruptions per hour). The other axis is Δ (recovery minutes). Each cell represents a specific (λ, Δ) combination, and the color shows the expected capacity (number of θ-minute blocks per day). Dark purple cells are hospitable to deep work. Light purple cells are hostile—you're lucky to get even one θ-block per day.
 
 Here's the map, with a threshold control that lets you toggle θ between 30, 45, and 60 minutes. I've highlighted three specific cells with color-coded borders:
 
@@ -220,9 +222,9 @@ Spend a moment looking at the three color-coded cells. These aren't arbitrary—
 
 Now use the threshold control to toggle θ between 30, 45, and 60 minutes. Watch what happens to the three highlighted cells:
 
-- In the **"good" regime** (green border), the cell stays relatively bright even at θ = 60. You can expect multiple 60-minute blocks per day.
-- In the **"typical" regime** (amber border), the cell looks okay at θ = 30, dims at θ = 45, and nearly dies at θ = 60. This is why you feel like you can handle small tasks but never get to the hard problems.
-- In the **"terrible" regime** (red border), the cell is basically dark at any θ that matters. Even 30-minute blocks are rare.
+- In the **"good" regime** (green border), the cell stays relatively bright even at θ = 60. High capacity: you can expect multiple 60-minute blocks per day.
+- In the **"typical" regime** (amber border), the cell looks okay at θ = 30, dims at θ = 45, and nearly dies at θ = 60. The capacity collapses as θ increases—this is why you feel like you can handle small tasks but never get to the hard problems.
+- In the **"terrible" regime** (red border), the cell is basically dark at any θ that matters. Near-zero capacity: even 30-minute blocks are rare.
 
 ### The Capacity Formula in Action
 
@@ -284,9 +286,9 @@ Here's the same map, but frozen at θ = 60 and with the threshold control remove
 
 Look at how small the hospitable region is. The top-left corner (low λ, low Δ) is bright, but it doesn't take much movement rightward or downward before the map turns dark. The three highlighted cells tell the story:
 
-- **"Good" regime** (green border): Still bright. You can routinely expect 60-minute blocks.
-- **"Typical" regime** (amber border): Already dim. Maybe one 60-minute block per day, often zero.
-- **"Terrible" regime** (red border): Almost black. 60-minute blocks are lottery-ticket rare.
+- **"Good" regime** (green border): Still bright. High capacity: you can routinely expect 60-minute blocks.
+- **"Typical" regime** (amber border): Already dim. Low capacity: maybe one 60-minute block per day, often zero.
+- **"Terrible" regime** (red border): Almost black. Near-zero capacity: 60-minute blocks are lottery-ticket rare.
 
 And remember: these highlighted regimes are calibrated against the research. The "typical" cell (λ = 2.0, Δ = 20) is actually _better_ than what many knowledge workers experience. If your real λ is closer to the Bailey et al. numbers (λ ≈ 15) or the Microsoft numbers (λ ≈ 30), you're living off the right edge of this map, in territory where 60-minute deep work is functionally impossible without drastic intervention.
 
@@ -376,7 +378,7 @@ Delta is about **stickiness**. It's how long interruptions linger after they're 
 
 **What this looks like on the map:**
 
-Reducing Δ moves you upward on the heatmap—toward shorter recovery times and brighter cells. The effect is smaller than reducing λ, but it's still meaningful. If you can shave 10 minutes off each recovery, and you have 8 interruptions in a day, you've just reclaimed 80 minutes—more than an hour of your day.
+Reducing Δ moves you upward on the heatmap—toward shorter recovery times and brighter cells. The effect is smaller than reducing λ, but it's still meaningful. If you can shave 10 minutes off each recovery, and you have 8 interruptions in a day, you've just reclaimed 80 minutes and increased your capacity for real work.
 
 **Tie to research:**
 
