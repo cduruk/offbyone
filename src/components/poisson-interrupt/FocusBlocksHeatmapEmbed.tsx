@@ -235,7 +235,10 @@ export function FocusBlocksHeatmapEmbed({
                 hovered &&
                 hovered.lambda === cell.lambda &&
                 hovered.delta === cell.delta
-              const highlightedCell = findHighlightedCell(cell.lambda, cell.delta)
+              const highlightedCell = findHighlightedCell(
+                cell.lambda,
+                cell.delta,
+              )
               const isHighlighted = !!highlightedCell
               const textValue = cell.expectedBlocks.toFixed(1)
               // Determine text color based on background lightness
