@@ -82,6 +82,7 @@ export function DayDetailEmbed({
         lambda={lambda}
         delta={delta}
         showNavigation={showNavigation}
+        showBackButton={false}
       />
     </div>
   )
