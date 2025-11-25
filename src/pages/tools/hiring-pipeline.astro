@@ -10,7 +10,7 @@ import Layout from '@/layouts/Layout.astro'
     slot="head"
     title="Hiring Pipeline Calculator"
     description="Calculate how many candidates you need to reach out to make one hire based on your conversion rates."
-    ogImage="/static/og/about.png"
+    ogImage="/static/og/tools-hiring-pipeline.png"
   />
   <Breadcrumbs
     items={[
@@ -33,15 +33,17 @@ import Layout from '@/layouts/Layout.astro'
           calculating how many candidates you need at each stage based on your
           conversion rates.
         </p>
+        <p>
+          For more context on hiring pipeline math, read the accompanying post:
+          <a href="/posts/interactive-hiring-pipeline-calculator/"
+            >Interactive Hiring Pipeline Calculator</a
+          >.
+        </p>
       </div>
 
       <!-- Calculator -->
-      <div
-        class="not-prose w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl"
-      >
-        <div class="p-6">
-          <PipelineCalculator client:load />
-        </div>
+      <div class="not-prose mt-4 w-full">
+        <PipelineCalculator client:load />
       </div>
 
       <!-- Instructions -->

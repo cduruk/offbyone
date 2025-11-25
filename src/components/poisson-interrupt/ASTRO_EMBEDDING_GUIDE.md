@@ -769,11 +769,13 @@ These components generate simulation data internally based on the props you prov
 **Solution:**
 
 1. **Verify CSS file is imported** - Most common issue!
+
    ```mdx
    import '~/styles/poisson-visualizations.css' // Don't forget this
 
    !
    ```
+
 2. Verify CSS variables are defined in `poisson-visualizations.css`
 3. Check that Tailwind is processing the component files
 4. Add component paths to your `tailwind.config.ts`:

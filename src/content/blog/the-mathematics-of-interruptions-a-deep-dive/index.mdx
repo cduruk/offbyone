@@ -1,0 +1,811 @@
+---
+title: 'The Mathematics of Interruptions: A Deep Dive'
+description: 'Mathematical models and formulas for understanding how interruptions affect productivity and focus time'
+date: 2025-11-24
+tags: ['business', 'margins']
+ogImage: './og-image.png'
+authors: ['cduruk']
+draft: true
+---
+
+import Callout from '@/components/Callout.astro'
+
+## Introduction
+
+This document explores the mathematical foundations behind interruption modeling and focus time analysis. It combines probability theory, cognitive science research, and practical software engineering to quantify how interruptions fragment our workday and destroy productive capacity.
+
+The models presented here form the theoretical foundation for interactive visualizations and provide a rigorous framework for understanding why "just a few interruptions" can completely derail a workday.
+
+## Foundational Concepts
+
+<Callout variant="definition" title="Poisson Distribution">
+  The **Poisson distribution** is a probability distribution that models the number of events occurring in a fixed interval of time or space, when these events occur:
+  - **Independently** (one event doesn't affect the probability of another)
+  - At a **constant average rate** ($\lambda$, pronounced "lambda")
+  - **Randomly** (you can't predict when the next one will occur)
+
+**Real-world examples:**
+
+- Number of phone calls received per hour at a call center
+- Number of customers arriving at a store per hour
+- **Number of interruptions per hour in a workday** ⭐
+
+**Why it's perfect for interruptions:**
+Interruptions are random (you don't know when the next Slack message will arrive), they occur at roughly constant average rates (e.g., "I get interrupted about once per hour"), and each interruption is independent.
+
+**Key property - Memoryless:**
+In a Poisson process, the **time between interruptions** follows an exponential distribution that is "memoryless" - the probability of getting interrupted in the next 10 minutes is the same whether you just got interrupted or you've been working uninterrupted for an hour. This is frustrating but realistic!
+
+</Callout>
+
+<Callout variant="definition" title="Monte Carlo Simulation">
+  A **Monte Carlo simulation** is a computational technique that uses repeated random sampling to obtain numerical results. Instead of solving complex equations analytically, you:
+
+1. **Run many simulations** (e.g., 60 simulated workdays)
+2. **Use randomness** in each simulation (different interruption patterns each day)
+3. **Calculate the average** across all simulations
+
+**Why we use it here:**
+Calculating the exact expected value of "focus blocks per day" analytically would be extremely complex due to chain interruptions (interruptions during recovery periods), end-of-day boundary effects, and multiple interacting parameters ($\lambda$, $\Delta$, threshold).
+
+Monte Carlo gives us accurate estimates with reasonable computation.
+
+**Example:**
+Instead of deriving a formula for "expected focus blocks with $\lambda=2$, $\Delta=20$, threshold=60", we:
+
+1. Simulate 60 different days with those parameters
+2. Count focus blocks for each simulated day
+3. Take the average: this is our estimate of the expected value
+
+With 60 simulations, our estimate is quite accurate (law of large numbers).
+
+</Callout>
+
+<Callout variant="definition" title="Expected Value vs Actual Outcomes">
+  The **expected value** $\mathbb{E}[X]$ is the long-run average if you repeated the process many times.
+
+**Important distinction:**
+
+- **Expected interruptions per day**: $\mathbb{E}[\text{interruptions}] = \lambda \times 8$ hours
+- **Actual interruptions on any given day**: Could be higher or lower due to randomness
+
+**Example:**
+If $\lambda = 1$ interruption/hour, then the expected interruptions per 8-hour day is $\mathbb{E}[\text{interruptions}] = 8$. But on any given day, you might experience 5, 10, or 12 interruptions. The Poisson distribution tells us the probability of each outcome.
+
+This is why some days feel much worse than others, even though your "average" interruption rate is constant!
+
+</Callout>
+
+## Mathematical Models
+
+### 1. Poisson Distribution for Interruptions
+
+<Callout variant="theorem" title="Poisson Distribution Formula">
+  The probability of exactly $k$ interruptions occurring in a time period is:
+
+$$
+P(k) = \frac{\lambda^k e^{-\lambda}}{k!}
+$$
+
+Where:
+
+- $k$ = number of interruptions (0, 1, 2, 3, ...)
+- $\lambda$ = expected number of interruptions in the time period
+- $e$ = Euler's number ≈ 2.71828
+- $k!$ = factorial of $k$ (e.g., $5! = 5 \times 4 \times 3 \times 2 \times 1 = 120$)
+
+**For an 8-hour workday:**
+If your interruption rate is $\lambda_{\text{hour}}$ per hour, then:
+
+$$
+\lambda_{\text{day}} = \lambda_{\text{hour}} \times 8
+$$
+
+</Callout>
+
+<Callout variant="example" title="Calculating Interruption Probabilities">
+  If you get interrupted once per hour on average ($\lambda_{\text{hour}} = 1$), then $\lambda_{\text{day}} = 8$.
+
+The probability of exactly 5 interruptions in that day:
+
+$$
+P(k=5) = \frac{8^5 e^{-8}}{5!} = \frac{32768 \times 0.000335}{120} \approx 0.092 = 9.2\%
+$$
+
+The probability of exactly 8 interruptions (the expected value):
+
+$$
+P(k=8) = \frac{8^8 e^{-8}}{8!} \approx 0.140 = 14.0\%
+$$
+
+**Key insight:** Even when the expected value is 8, you only have a 14% chance of getting exactly 8 interruptions! The distribution is spread out - you might get anywhere from 3 to 15 interruptions.
+
+</Callout>
+
+### 2. Exponential Distribution for Inter-arrival Times
+
+<Callout variant="theorem" title="Time Between Interruptions">
+  While the Poisson distribution tells us how many interruptions occur, the **exponential distribution** tells us how much time passes between interruptions:
+
+$$
+f(t) = \lambda e^{-\lambda t}
+$$
+
+Where:
+
+- $t$ = time between events
+- $\lambda$ = rate parameter (interruptions per unit time)
+
+**Expected time between interruptions:**
+
+$$
+\mathbb{E}[T] = \frac{1}{\lambda}
+$$
+
+</Callout>
+
+<Callout variant="example" title="Inter-arrival Time Calculation">
+  If $\lambda = 2$ interruptions per hour: - Expected time between
+  interruptions: $\mathbb{E}[T] = 1/2 = 0.5$ hours = 30 minutes - But the time
+  between any two interruptions is random! - 50% chance the next interruption
+  occurs within the next 21 minutes - 10% chance it occurs within the next 3
+  minutes
+</Callout>
+
+<Callout variant="important" title="Memoryless Property">
+  The exponential distribution (which models time between interruptions in a Poisson process) is "memoryless":
+
+$$
+P(T > t + s \mid T > s) = P(T > t)
+$$
+
+In plain English: If you've already gone 30 minutes without interruption, the probability you'll make it another 30 minutes is the same as it was at the start. The distribution doesn't "remember" how long it's been.
+
+This is frustrating but realistic - just because you haven't been interrupted in a while doesn't mean you're "due" for an interruption soon!
+
+</Callout>
+
+### 3. Recovery Time Cost Model
+
+<Callout variant="theorem" title="Lost Time from Interruptions (Baseline Model)">
+  Every interruption has two costs:
+  1. **Direct cost**: The time spent dealing with the interruption
+  2. **Recovery cost**: The time needed to return to focused work
+
+**The Formula (ignoring chain interruptions):**
+
+$$
+\text{Lost Time per Day} = n \times \Delta
+$$
+
+Where:
+
+- $n$ = number of interruptions
+- $\Delta$ = recovery time per interruption (minutes)
+
+This gives a **baseline lower bound** on lost productive time. In reality, chain interruptions and end-of-day effects make true lost time even higher and strongly non-linear in $n$.
+</Callout>
+
+<Callout variant="example" title="Daily Recovery Time Cost">
+  If you experience 5 interruptions per day, and each requires 23 minutes of recovery time (Gloria Mark's finding):
+
+$$
+\text{Lost Time} = 5 \times 23 = 115 \text{ minutes} \approx 1.9 \text{ hours}
+$$
+
+Out of an 8-hour workday, you've lost nearly 2 hours just to recovery time, not counting the interruptions themselves!
+
+</Callout>
+
+### 4. Chain Interruptions (Compounding Effect)
+
+<Callout variant="definition" title="Chain Interruptions">
+  A **chain interruption** occurs when you're interrupted during your recovery period from a previous interruption.
+
+If you're interrupted at time $t_1$, your recovery period is $[t_1, t_1 + \Delta]$.
+
+If a second interruption occurs at time $t_2$ where $t_1 < t_2 < t_1 + \Delta$, then:
+
+- The recovery period **extends** to $[t_1, t_2 + \Delta]$
+- No productive work happens in the interval $[t_1, t_2 + \Delta]$
+- Total lost time: $t_2 + \Delta - t_1$
+
+(This is longer than the sum of individual recoveries!)
+</Callout>
+
+<Callout variant="example" title="Chain Interruption Example">
+  - First interruption at $t_1 = 100$ minutes
+  - Recovery would end at $100 + 20 = 120$ minutes
+  - Second interruption at $t_2 = 110$ minutes (during recovery!)
+  - Recovery now extends to $110 + 20 = 130$ minutes
+  - **Total lost time**: $130 - 100 = 30$ minutes
+
+**Why this matters:**
+With high interruption rates, chain interruptions become common. The relationship between interruption rate and lost time becomes **non-linear** - doubling the interruption rate more than doubles the lost time.
+
+</Callout>
+
+### 5. Focus Block Construction
+
+<Callout variant="definition" title="Focus Blocks">
+  A **focus block** is a continuous period of uninterrupted work.
+
+Given interruptions at times $t_1, t_2, \ldots, t_n$ and recovery time $\Delta$:
+
+Focus blocks are:
+
+- Block 1: $[0, t_1)$ with duration $t_1$
+- Block 2: $[t_1 + \Delta, t_2)$ with duration $t_2 - (t_1 + \Delta)$
+- Block 3: $[t_2 + \Delta, t_3)$ with duration $t_3 - (t_2 + \Delta)$
+- ...
+- Block $n+1$: $[t_n + \Delta, 480)$ with duration $480 - (t_n + \Delta)$
+
+**Important:** Only blocks with duration > 0 are counted (handles chain interruptions).
+
+</Callout>
+
+### 6. Capacity Calculation
+
+<Callout variant="theorem" title="Capacity Formula">
+  **The Problem:**
+  Having "3 hours of focus time" doesn't mean you can do "3 hours of work" if that time is fragmented into 6 blocks of 30 minutes each.
+
+**The Capacity Formula:**
+
+$$
+C(\theta) = \sum_{i=1}^{n} \left\lfloor \frac{d_i}{\theta} \right\rfloor
+$$
+
+Where:
+
+- $C(\theta)$ = capacity (number of work units) for threshold $\theta$
+- $d_i$ = duration of focus block $i$
+- $\theta$ = minimum time needed for a "unit of work" (e.g., 30, 45, or 60 minutes)
+- $\lfloor x \rfloor$ = floor function (round down to nearest integer)
+
+**Why floor function?**
+You can't do 1.5 units of work in a 90-minute block if each unit requires 60 minutes. You can only do 1 complete unit, and the remaining 30 minutes might not be enough for meaningful work.
+
+</Callout>
+
+<Callout variant="example" title="Capacity Calculation Example">
+  Suppose you have these focus blocks in a day:
+  - Block 1: 90 minutes
+  - Block 2: 45 minutes
+  - Block 3: 20 minutes
+  - **Total time: 155 minutes**
+
+**For 30-minute threshold ($\theta = 30$):**
+
+$$
+C(30) = \left\lfloor \frac{90}{30} \right\rfloor + \left\lfloor \frac{45}{30} \right\rfloor + \left\lfloor \frac{20}{30} \right\rfloor = 3 + 1 + 0 = 4 \text{ units}
+$$
+
+**For 45-minute threshold ($\theta = 45$):**
+
+$$
+C(45) = \left\lfloor \frac{90}{45} \right\rfloor + \left\lfloor \frac{45}{45} \right\rfloor + \left\lfloor \frac{20}{45} \right\rfloor = 2 + 1 + 0 = 3 \text{ units}
+$$
+
+**For 60-minute threshold ($\theta = 60$):**
+
+$$
+C(60) = \left\lfloor \frac{90}{60} \right\rfloor + \left\lfloor \frac{45}{60} \right\rfloor + \left\lfloor \frac{20}{60} \right\rfloor = 1 + 0 + 0 = 1 \text{ unit}
+$$
+
+**Key insight:** Same 155 minutes of total focus time, but capacity ranges from 1 to 4 units depending on the threshold! Work requiring longer uninterrupted periods is disproportionately affected by fragmentation.
+
+</Callout>
+
+### 7. Expected Value Estimation (Monte Carlo)
+
+<Callout variant="theorem" title="Monte Carlo Estimation">
+  To create heatmaps, we calculate the expected capacity for each combination of $(\lambda, \Delta, \theta)$.
+
+**The Formula:**
+
+$$
+\mathbb{E}[C(\lambda, \Delta, \theta)] \approx \frac{1}{N} \sum_{i=1}^{N} C_i
+$$
+
+Where:
+
+- $\mathbb{E}[C]$ = expected capacity (what we're estimating)
+- $N$ = number of simulations (typically 60)
+- $C_i$ = capacity observed in simulation $i$
+
+**Why this works:**
+By the **Law of Large Numbers**, as $N \to \infty$, the sample mean converges to the true expected value:
+
+$$
+\lim_{N \to \infty} \frac{1}{N} \sum_{i=1}^{N} C_i = \mathbb{E}[C]
+$$
+
+With $N = 60$, we get a good approximation with reasonable computation time.
+
+</Callout>
+
+<Callout variant="notation" title="Standard Error">
+  The accuracy of our estimate can be quantified by the standard error:
+
+$$
+SE = \frac{\sigma}{\sqrt{N}}
+$$
+
+Where $\sigma$ is the standard deviation of capacity across simulations.
+
+</Callout>
+
+### 8. Deep Work Threshold
+
+<Callout variant="theorem" title="Flow State Probability">
+  Research suggests that meaningful deep work requires minimum uninterrupted blocks.
+
+**Conceptual Model:**
+
+$$
+P(\text{Flow State}) = \begin{cases}
+0 & \text{if } d < \theta_{\min} \\
+f(d - \theta_{\min}) & \text{if } d \geq \theta_{\min}
+\end{cases}
+$$
+
+Where:
+
+- $d$ = duration of focus block
+- $\theta_{\min}$ = minimum time to enter flow (15-20 minutes)
+- $f(x)$ = increasing function (longer blocks = higher probability of deep work)
+
+**Daily Capacity Limit:**
+
+Even with perfect conditions, humans can sustain deep work for limited time:
+
+$$
+C_{\max} \approx 240 \text{ minutes} = 4 \text{ hours/day}
+$$
+
+This is a biological constraint (Cal Newport's research on deep work).
+
+</Callout>
+
+## From Theory to Implementation
+
+Now let's see how these mathematical models translate into actual code and visualizations. This section walks through the complete pipeline from abstract probability distribution to concrete simulation results.
+
+### The Simulation Pipeline
+
+<Callout variant="explanation" title="Step 1: Define Parameters">
+  Every simulation starts with three parameters:
+
+- **λ** (lambda): Interruptions per hour (e.g., 2/hour)
+- **Δ** (delta): Recovery time in minutes (e.g., 20 minutes)
+- **Day length**: 480 minutes (8-hour workday)
+
+From these, we calculate the daily rate:
+
+$$
+\lambda_{\text{day}} = \lambda_{\text{hour}} \times 8
+$$
+
+For example, with $\lambda = 2$ interruptions/hour → $\lambda_{\text{day}} = 16$ expected interruptions per day.
+
+</Callout>
+
+<Callout variant="explanation" title="Step 2: Sample from Poisson Distribution">
+  Using Knuth's algorithm, we generate a random number of interruptions from the Poisson distribution:
+
+```typescript
+// Sample from Poisson(λ_day)
+function poissonSample(lambda: number, rng: () => number): number {
+  let L = Math.exp(-lambda)
+  let k = 0
+  let p = 1
+
+  do {
+    k++
+    p *= rng()
+  } while (p > L)
+
+  return k - 1
+}
+
+// For λ_day = 16, this might return:
+// Simulation 1: 14 interruptions
+// Simulation 2: 18 interruptions
+// Simulation 3: 15 interruptions
+// Simulation 4: 12 interruptions
+```
+
+**Key insight:** Even with the same expected value (16), each simulation produces a different actual count. This is the randomness we're modeling!
+
+</Callout>
+
+<Callout variant="explanation" title="Step 3: Generate Random Interruption Times">
+  Once we know how many interruptions occur, we randomly place them throughout the 480-minute workday:
+
+```typescript
+// Generate n interruptions at random times
+const interruptions: number[] = []
+for (let i = 0; i < numInterruptions; i++) {
+  interruptions.push(rng() * 480) // Random time in [0, 480)
+}
+
+// Sort chronologically
+interruptions.sort((a, b) => a - b)
+
+// Example result (14 interruptions):
+// [23, 45, 89, 112, 145, 178, 234, 267, 301, 334, 389, 412, 445, 471]
+```
+
+The uniform distribution means interruptions are equally likely at any time during the day (matching the memoryless property of the Poisson process).
+
+</Callout>
+
+<Callout variant="explanation" title="Step 4: Construct Focus Blocks">
+  Now we build focus blocks from the gaps between interruptions + recovery periods:
+
+```typescript
+const focusBlocks: FocusBlock[] = []
+let currentTime = 0 // Tracks when focused work can resume
+
+for (const interruptTime of interruptions) {
+  if (interruptTime > currentTime) {
+    // Create a focus block from currentTime to interruptTime
+    const duration = interruptTime - currentTime
+    focusBlocks.push({
+      start: currentTime,
+      end: interruptTime,
+      duration: duration,
+    })
+  }
+  // After interruption, add recovery time
+  currentTime = Math.min(interruptTime + recoveryTimeMinutes, 480)
+}
+
+// Add final block from last recovery to end of day
+if (currentTime < 480) {
+  focusBlocks.push({
+    start: currentTime,
+    end: 480,
+    duration: 480 - currentTime,
+  })
+}
+```
+
+**Chain interruption handling:** If an interruption occurs during a recovery period (interruptTime < currentTime), no new focus block is created. The recovery period simply extends.
+
+</Callout>
+
+<Callout variant="explanation" title="Step 5: Calculate Capacity">
+  Apply the capacity formula to count usable work units:
+
+```typescript
+function calculateCapacity(
+  focusBlocks: FocusBlock[],
+  thresholdMinutes: number,
+): number {
+  return focusBlocks.reduce((sum, block) => {
+    return sum + Math.floor(block.duration / thresholdMinutes)
+  }, 0)
+}
+
+// For threshold = 60 minutes:
+const capacity60 = calculateCapacity(focusBlocks, 60)
+
+// For threshold = 30 minutes:
+const capacity30 = calculateCapacity(focusBlocks, 30)
+```
+
+</Callout>
+
+<Callout variant="explanation" title="Step 6: Repeat for Monte Carlo Estimation">
+  A single simulation shows one possible day. To estimate expected capacity, we run many simulations:
+
+```typescript
+function runSimulation(config: SimulationConfig): DayStats[] {
+  const stats: DayStats[] = []
+
+  for (let day = 0; day < config.numDays; day++) {
+    const seed = config.baseSeed + day
+    const dayStats = simulateDay({
+      lambdaPerHour: config.lambdaPerHour,
+      recoveryTimeMinutes: config.recoveryTimeMinutes,
+      seed: seed, // Different seed = different random sequence
+    })
+    stats.push(dayStats)
+  }
+
+  return stats
+}
+
+// Run 60 simulations
+const results = runSimulation({
+  lambdaPerHour: 2,
+  recoveryTimeMinutes: 20,
+  numDays: 60,
+  baseSeed: 12345,
+})
+
+// Calculate average capacity
+const avgCapacity = results.reduce((sum, day) => sum + day.capacity60, 0) / 60
+```
+
+This average becomes one cell in the heatmap visualization.
+
+</Callout>
+
+### Complete Example Walkthrough
+
+<Callout variant="example" title="Full Simulation: λ=2/hour, Δ=20min, threshold=60min">
+  Let's walk through one complete simulation from start to finish:
+
+**Input Parameters:**
+
+- $\lambda = 2$ interruptions/hour
+- $\Delta = 20$ minutes recovery
+- Threshold: 60 minutes
+- Day length: 480 minutes
+
+**Step 1: Calculate daily rate**
+
+$$\lambda_{\text{day}} = 2 \times 8 = 16 \text{ expected interruptions}$$
+
+**Step 2: Sample from Poisson(16)**
+
+Result: 14 actual interruptions (random outcome)
+
+**Step 3: Generate random times**
+
+Interruptions at: [23, 45, 89, 112, 145, 178, 234, 267, 301, 334, 389, 412, 445, 471] minutes
+
+**Step 4: Build focus blocks**
+
+| Block | Start | End | Duration | Calculation                          |
+| ----- | ----- | --- | -------- | ------------------------------------ |
+| 1     | 0     | 23  | 23 min   | Start → first interrupt              |
+| 2     | 43    | 45  | 2 min    | 23+20 recovery → second interrupt    |
+| -     | -     | -   | -        | Chain! 45+20=65, but interrupt at 89 |
+| 3     | 65    | 89  | 24 min   | Recovery ends → interrupt            |
+| 4     | 109   | 112 | 3 min    | 89+20 recovery → interrupt           |
+| -     | -     | -   | -        | More chain interruptions...          |
+| 5     | 132   | 145 | 13 min   |                                      |
+| 6     | 165   | 178 | 13 min   |                                      |
+| 7     | 198   | 234 | 36 min   |                                      |
+| 8     | 254   | 267 | 13 min   |                                      |
+| 9     | 287   | 301 | 14 min   |                                      |
+| 10    | 321   | 334 | 13 min   |                                      |
+| 11    | 354   | 389 | 35 min   |                                      |
+| 12    | 409   | 412 | 3 min    |                                      |
+| 13    | 432   | 445 | 13 min   |                                      |
+| 14    | 465   | 471 | 6 min    |                                      |
+| 15    | 491   | 480 | -11      | Out of bounds! Skipped               |
+
+**Step 5: Calculate capacity (threshold=60min)**
+
+$$
+C(60) = \sum_{i=1}^{14} \left\lfloor \frac{d_i}{60} \right\rfloor = 0 + 0 + 0 + 0 + 0 + 0 + 0 + 0 + 0 + 0 + 0 + 0 + 0 + 0 = 0
+$$
+
+**Result:** Zero 60-minute blocks! Even though there are 14 focus blocks totaling ~200 minutes, none are long enough for deep work.
+
+**This is one "bad day" in the visualization.** With $\lambda=2$ and $\Delta=20$, high fragmentation means almost no capacity for 60-minute work units.
+
+If we used threshold=30min instead:
+
+$$
+C(30) = 0 + 0 + 0 + 0 + 0 + 0 + 1 + 0 + 0 + 0 + 1 + 0 + 0 + 0 = 2 \text{ blocks}
+$$
+
+Only the two 35-36 minute blocks would count!
+
+</Callout>
+
+<Callout variant="important" title="From Simulation to Visualization">
+  **How this becomes the day view:**
+
+1. Each simulation (like the example above) generates one "day"
+2. The day is visualized as a timeline showing:
+   - Red bars: interruptions
+   - Gray periods: recovery time
+   - Green/blue blocks: usable focus blocks
+3. Running 60 simulations shows the distribution of possible outcomes
+4. The heatmap averages capacity across all 60 simulations for each ($\lambda$, $\Delta$) combination
+
+**Key insight:** The same parameters ($\lambda=2$, $\Delta=20$) can produce:
+
+- Good days: 10 interruptions → maybe 3-4 focus blocks
+- Bad days: 18 interruptions → 0-1 focus blocks (like our example)
+
+This variability is the **random nature of the Poisson process**.
+</Callout>
+
+## Research Findings
+
+### Gloria Mark: Context Switching Cost
+
+<Callout variant="note" title="The 23-Minute Recovery">
+  **Source:** Mark, G., Gudith, D., & Klocke, U. (2008). "The Cost of Interrupted Work: More Speed and Stress." CHI 2008 Proceedings.
+
+**Key Finding:**
+**23 minutes and 15 seconds** to return to original task after interruption
+
+**Methodology:**
+
+- Observed office workers using computer monitoring
+- Tracked task switches and resumption times
+- Found workers switch contexts every 10.5 minutes on average
+
+**Additional Findings:**
+
+- People switch activities every 3 minutes 5 seconds
+- Interruptions cause increased stress (measured via heart rate, etc.)
+- Even self-interruptions (checking email) have recovery cost
+
+**Implications for our model:**
+Sets $\Delta \approx 23$ minutes as empirically grounded parameter.
+
+</Callout>
+
+### Sophie Leroy: Attention Residue
+
+<Callout variant="note" title="Attention Residue Concept">
+  **Source:** Leroy, S. (2009). "Why is it so hard to do my work? The challenge of attention residue when switching between work tasks." *Organizational Behavior and Human Decision Processes*, 109(2), 168-181.
+
+**Core Concept:**
+**Attention residue** = persistence of cognitive activity about Task A even after switching to Task B
+
+**Key Findings:**
+
+1. **Performance degradation**: Up to **40% reduction** in performance on subsequent task due to residue from prior task
+
+2. **Unfinished tasks create stronger residue**: Tasks left incomplete generate more residue than completed tasks
+
+3. **Time pressure paradox**: Finishing Task A under time pressure actually helps you disengage from it (reduces residue)
+
+**Why Recovery Takes So Long:**
+Attention residue provides cognitive mechanism for Gloria Mark's 23-minute finding:
+
+- Your mind doesn't instantly switch from Task A to Task B
+- Part of working memory remains occupied with Task A
+- Gradually dissipates over ~20-25 minutes
+- Performance degraded until residue clears
+</Callout>
+
+### Interruption Rate Benchmarks
+
+<Callout variant="note" title="Real-World Interruption Rates">
+  **Knowledge Workers (General):**
+  - Interrupted every **3-11 minutes**
+  - Average workers switch contexts every **3 minutes 5 seconds**
+  - Median attention span on computer: **40 seconds** (2016 data)
+
+**Implies:**
+$\lambda_{\text{hour}} = 5.5 - 20$ interruptions/hour
+
+**Software Developers:**
+
+- **87 interruptions per day** average
+- **57% of tasks** are interrupted
+- Interrupted every **3 minutes** on average
+- Only **one uninterrupted 2-hour session** per day (typical)
+
+**Implies:**
+$\lambda_{\text{hour}} \approx 11$ interruptions/hour (most developers operate in terrible conditions!)
+
+**Moderate Conditions (Goal):**
+
+- $\lambda_{\text{hour}} = 1-2$ interruptions/hour
+- Achievable with: notification controls, blocking time, remote work
+</Callout>
+
+## Practical Parameters
+
+### Interruption Rate ($\lambda$)
+
+| Condition | $\lambda$ (per hour) | $\lambda$ (per 8hr day) | Description                              |
+| --------- | -------------------- | ----------------------- | ---------------------------------------- |
+| Excellent | 0.5 - 1              | 4 - 8                   | Deep work environment, notifications off |
+| Good      | 1 - 2                | 8 - 16                  | Reasonable boundaries, async comm        |
+| Moderate  | 2 - 4                | 16 - 32                 | Typical office, frequent Slack           |
+| Poor      | 4 - 8                | 32 - 64                 | Open office, constant notifications      |
+| Terrible  | 8+                   | 64+                     | Crisis mode, firefighting                |
+
+### Recovery Time ($\Delta$)
+
+| Situation          | $\Delta$ (minutes) | Source                        |
+| ------------------ | ------------------ | ----------------------------- |
+| Quick refocus      | 9.5                | Qatalog/Cornell study         |
+| Typical recovery   | 15 - 20            | General productivity research |
+| Full recovery      | 23                 | Gloria Mark (gold standard)   |
+| Deep flow re-entry | 30 - 45            | Developer-specific studies    |
+
+### Work Block Thresholds ($\theta$)
+
+| Threshold | Type of Work                | Worker Type               |
+| --------- | --------------------------- | ------------------------- |
+| 30 min    | Light focus work            | Beginners, shallow work   |
+| 45 min    | Moderate complexity         | Intermediate              |
+| 60 min    | Deep work, complex problems | Experienced               |
+| 90 min    | Flow state, novel design    | Experts, ideal conditions |
+
+## Key Insights from the Model
+
+<Callout variant="important" title="1. Non-Linear Relationship">
+  Doubling interruptions **more than doubles** the lost time due to: - Chain
+  interruptions (interruptions during recovery) - Fragmentation (reducing
+  capacity even when total time is same)
+</Callout>
+
+<Callout variant="important" title="2. Threshold Sensitivity">
+  Work requiring longer uninterrupted blocks (high $\theta$) is **disproportionately affected** by interruptions.
+
+Example: With $\lambda = 2$, $\Delta = 20$:
+
+- Capacity for $\theta=30$: ~6 blocks
+- Capacity for $\theta=60$: ~2 blocks
+
+The ratio isn't 2:1 (as you'd expect from 60/30), it's ~3:1 due to fragmentation!
+
+</Callout>
+
+<Callout variant="important" title="3. Recovery Time Matters">
+  The cost isn't just the interruption itself - it's the recovery period.
+
+Example: 1-minute Slack message with 23-minute recovery = 24 minutes lost
+
+If you get 5 such messages per day: **2 hours lost** (25% of workday)
+
+</Callout>
+
+<Callout variant="important" title="4. Good vs Bad Conditions">
+  The difference between good and bad is **not incremental** - it's **catastrophic**.
+
+- **Good conditions** ($\lambda=1$, $\Delta=15$): ~4-5 focus blocks per day
+- **Bad conditions** ($\lambda=4$, $\Delta=25$): ~0-1 focus blocks per day
+</Callout>
+
+<Callout variant="important" title="5. Why Some Days Feel Impossible">
+  Due to Poisson randomness, even with moderate average $\lambda$:
+  - Some days you'll get 2× the expected interruptions
+  - Those days feel impossible because they are - capacity drops to near zero
+
+This isn't bad luck - it's **statistical reality** with random processes.
+
+</Callout>
+
+## Mathematical Notation Reference
+
+| Symbol              | Meaning                                               |
+| ------------------- | ----------------------------------------------------- |
+| $\lambda$ (lambda)  | Rate parameter (interruptions per unit time)          |
+| $\Delta$ (delta)    | Recovery time per interruption (minutes)              |
+| $\theta$ (theta)    | Threshold duration for "work unit" (minutes)          |
+| $k$                 | Count of events (number of interruptions)             |
+| $n$                 | Number of interruptions in a specific instance        |
+| $N$                 | Number of simulations (for Monte Carlo)               |
+| $t$                 | Time variable                                         |
+| $d$                 | Duration of a focus block                             |
+| $C(\theta)$         | Capacity (count of work units for threshold $\theta$) |
+| $\mathbb{E}[X]$     | Expected value of random variable $X$                 |
+| $P(\text{event})$   | Probability of an event                               |
+| $\lfloor x \rfloor$ | Floor function (round down)                           |
+| $e$                 | Euler's number ≈ 2.71828                              |
+
+## Sources
+
+### Primary Research
+
+1. **Mark, G., Gudith, D., & Klocke, U. (2008).** "The Cost of Interrupted Work: More Speed and Stress." CHI 2008 Proceedings. [PDF](https://ics.uci.edu/~gmark/chi08-mark.pdf)
+
+2. **Leroy, S. (2009).** "Why is it so hard to do my work? The challenge of attention residue when switching between work tasks." _Organizational Behavior and Human Decision Processes_, 109(2), 168-181. [ScienceDirect](https://www.sciencedirect.com/science/article/abs/pii/S0749597809000399)
+
+3. **Newport, C. (2016).** _Deep Work: Rules for Focused Success in a Distracted World._ Grand Central Publishing.
+
+4. **Csikszentmihalyi, M. (1990).** _Flow: The Psychology of Optimal Experience._ Harper & Row.
+
+### Additional Reading
+
+- [Interruption Science - Wikipedia](https://en.wikipedia.org/wiki/Interruption_science)
+- [Breaking the Flow: Software Development Interruptions](https://kjl.name/papers/icse24.pdf)
+- [Developer Flow State - Stack Overflow](https://stackoverflow.blog/2018/09/10/developer-flow-state-and-its-impact-on-productivity/)
+- [Paul Graham: Maker's Schedule, Manager's Schedule](https://paulgraham.com/makersschedule.html)

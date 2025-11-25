@@ -428,6 +428,27 @@ function getStaticPages(): StaticPage[] {
         'Browse posts by topic. Each tag shows how many posts are tagged with it.',
       outputPath: join(OG_DIR, 'tags.png'),
     },
+    {
+      name: 'tools',
+      title: 'Interactive Tools',
+      description:
+        'Interactive visualizations and calculators for understanding complex concepts.',
+      outputPath: join(OG_DIR, 'tools.png'),
+    },
+    {
+      name: 'tools-interruptions',
+      title: 'Interruptions Simulator',
+      description:
+        'Interactive visualizations showing how random interruptions fragment deep work and destroy productivity.',
+      outputPath: join(OG_DIR, 'tools-interruptions.png'),
+    },
+    {
+      name: 'tools-hiring-pipeline',
+      title: 'Hiring Pipeline Calculator',
+      description:
+        'Calculate how many candidates you need to reach out to make one hire based on your conversion rates.',
+      outputPath: join(OG_DIR, 'tools-hiring-pipeline.png'),
+    },
   ]
 }
 

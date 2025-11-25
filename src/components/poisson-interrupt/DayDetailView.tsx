@@ -21,6 +21,7 @@ interface DayDetailViewProps {
   lambda?: number
   delta?: number
   showNavigation?: boolean
+  showBackButton?: boolean
 }
 
 const ChartLegend = ({
@@ -80,7 +81,10 @@ export const DayDetailView: React.FC<DayDetailViewProps> = ({
   lambda,
   delta,
   showNavigation = true,
+  showBackButton,
 }) => {
+  // Default showBackButton to showNavigation if not explicitly set
+  const displayBackButton = showBackButton ?? showNavigation
   // Scales for detail view
   const VIEW_WIDTH = SVG_WIDTH
   const VIEW_HEIGHT = 200
@@ -125,7 +129,7 @@ export const DayDetailView: React.FC<DayDetailViewProps> = ({
           className="hidden w-full flex-col items-center gap-3 sm:flex"
           style={desktopContainerStyle}
         >
-          {showNavigation && (
+          {displayBackButton && (
             <Button
               variant="ghost"
               onClick={onBack}
@@ -149,7 +153,7 @@ export const DayDetailView: React.FC<DayDetailViewProps> = ({
                 >
                   <ChevronLeft size={20} />
                 </Button>
-                <span className="text-lg font-semibold text-gray-900">
+                <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   Day #{day.dayIndex + 1}
                 </span>
                 <Button
@@ -170,7 +174,7 @@ export const DayDetailView: React.FC<DayDetailViewProps> = ({
 
         {/* Mobile View */}
         <div className="flex w-full flex-col gap-3 px-4 sm:hidden">
-          {showNavigation && (
+          {displayBackButton && (
             <Button
               variant="ghost"
               onClick={onBack}
@@ -194,7 +198,7 @@ export const DayDetailView: React.FC<DayDetailViewProps> = ({
                 >
                   <ChevronLeft size={22} />
                 </Button>
-                <span className="text-base font-semibold text-gray-900">
+                <span className="text-base font-semibold text-gray-900 dark:text-gray-100">
                   Day #{day.dayIndex + 1}
                 </span>
                 <Button
@@ -312,7 +316,7 @@ export const DayDetailView: React.FC<DayDetailViewProps> = ({
                     textAnchor="middle"
                     className="pointer-events-none fill-gray-600 text-xs font-bold italic [text-shadow:0_0_2px_rgba(255,255,255,0.9)] dark:fill-gray-100 dark:[text-shadow:0_0_2px_rgba(0,0,0,0.9)]"
                   >
-                    {Math.round(duration)}m
+                    {`${Math.round(duration)}m`}
                   </text>
                 )}
               </g>
@@ -353,7 +357,7 @@ export const DayDetailView: React.FC<DayDetailViewProps> = ({
                   strokeWidth="2"
                   className="drop-shadow-sm"
                 >
-                  <title>Focus Block: {Math.round(block.duration)}m</title>
+                  <title>{`Focus Block: ${Math.round(block.duration)}m`}</title>
                 </rect>
                 {width > 30 && (
                   <text
@@ -363,7 +367,7 @@ export const DayDetailView: React.FC<DayDetailViewProps> = ({
                     className="pointer-events-none fill-white text-sm font-bold"
                     style={{ textShadow: '0px 1px 2px rgba(0,0,0,0.2)' }}
                   >
-                    {Math.round(block.duration)}m
+                    {`${Math.round(block.duration)}m`}
                   </text>
                 )}
               </g>
@@ -459,7 +463,7 @@ export const DayDetailView: React.FC<DayDetailViewProps> = ({
                   textAnchor="middle"
                   className="fill-gray-600 text-[10px] font-bold italic [text-shadow:0_0_2px_rgba(255,255,255,0.9)] dark:fill-gray-100 dark:[text-shadow:0_0_2px_rgba(0,0,0,0.9)]"
                 >
-                  {Math.round(duration)}m gap
+                  {`${Math.round(duration)}m gap`}
                 </text>
               )}
             </g>
@@ -507,7 +511,7 @@ export const DayDetailView: React.FC<DayDetailViewProps> = ({
                   className="fill-white text-sm font-bold"
                   style={{ textShadow: '0px 1px 2px rgba(0,0,0,0.2)' }}
                 >
-                  {Math.round(block.duration)}m
+                  {`${Math.round(block.duration)}m`}
                 </text>
               ) : null}
 

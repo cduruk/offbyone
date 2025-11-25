@@ -27,11 +27,13 @@ function estimateExpectedBlocks(
   deltaMinutes: number,
   thresholdMinutes: number,
   simulations: number,
+  cellIndex: number,
 ): number {
   let total = 0
   for (let i = 0; i < simulations; i++) {
-    // Use different seed for each simulation to get Monte Carlo estimate
-    const seed = Math.floor(Math.random() * 1000000) + i
+    // Use deterministic seed based on cell position and simulation index
+    // This ensures server and client render the same values (no hydration mismatch)
+    const seed = cellIndex * 1000 + i
     const [day] = simulateDays(1, lambdaPerHour, deltaMinutes, seed)
 
     // Calculate capacity based on threshold (same as main app)
@@ -62,7 +64,7 @@ type HeatmapGrid = HeatmapCell[][] & { _max?: number }
 interface FocusBlocksHeatmapEmbedProps {
   threshold?: 30 | 45 | 60
   showThresholdControl?: boolean
-  highlightedCells?: Array<{ lambda: number; delta: number }>
+  highlightedCells?: Array<{ lambda: number; delta: number; color?: string }>
 }
 
 /**
@@ -86,9 +88,9 @@ export function FocusBlocksHeatmapEmbed({
   const [threshold, setThreshold] = useState(initialThreshold)
   const [hovered, setHovered] = useState<HeatmapCell | null>(null)
 
-  // Helper function to check if a cell should be highlighted
-  const isCellHighlighted = (lambda: number, delta: number) => {
-    return highlightedCells.some(
+  // Helper function to find highlighted cell (returns cell with color if found)
+  const findHighlightedCell = (lambda: number, delta: number) => {
+    return highlightedCells.find(
       (cell) =>
         Math.abs(cell.lambda - lambda) < 0.01 &&
         Math.abs(cell.delta - delta) < 0.01,
@@ -101,6 +103,7 @@ export function FocusBlocksHeatmapEmbed({
     let globalMax = 0
 
     // Reverse both axes: delta forward (low to high), lambda reverse (high to low)
+    let cellIndex = 0
     for (let di = 0; di < deltaValues.length; di++) {
       const row: HeatmapCell[] = []
       for (let li = lambdaValues.length - 1; li >= 0; li--) {
@@ -111,6 +114,7 @@ export function FocusBlocksHeatmapEmbed({
           delta,
           threshold,
           simsPerCell,
+          cellIndex++,
         )
         row.push({ lambda, delta, expectedBlocks: expected })
         if (expected > globalMax) globalMax = expected
@@ -235,7 +239,11 @@ export function FocusBlocksHeatmapEmbed({
                 hovered &&
                 hovered.lambda === cell.lambda &&
                 hovered.delta === cell.delta
-              const isHighlighted = isCellHighlighted(cell.lambda, cell.delta)
+              const highlightedCell = findHighlightedCell(
+                cell.lambda,
+                cell.delta,
+              )
+              const isHighlighted = !!highlightedCell
               const textValue = cell.expectedBlocks.toFixed(1)
               // Determine text color based on background lightness
               const t =
@@ -246,7 +254,7 @@ export function FocusBlocksHeatmapEmbed({
 
               // Determine stroke color and width based on state
               const strokeColor = isHighlighted
-                ? '#ef4444'
+                ? highlightedCell.color || '#ef4444'
                 : isHovered
                   ? '#222'
                   : 'rgba(0,0,0,0.06)'

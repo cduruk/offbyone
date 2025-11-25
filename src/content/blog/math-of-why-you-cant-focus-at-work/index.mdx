@@ -1,0 +1,597 @@
+---
+title: "The Math of Why You Can't Focus at Work"
+description: "Interruptions, recovery time, and task size: three numbers that determine if you'll get real work done. Interactive visualizations show the math behind bad days."
+date: 2025-11-24
+tags: ['programming', 'tech-industry', 'engineering-management']
+ogImage: './og-image.png'
+authors: ['cduruk']
+draft: false
+---
+
+import Callout from '@/components/Callout.astro'
+import { DaysGridEmbed } from '@/components/poisson-interrupt/DaysGridEmbed'
+import { DayDetailEmbed } from '@/components/poisson-interrupt/DayDetailEmbed'
+import { FocusBlocksHeatmapEmbed } from '@/components/poisson-interrupt/FocusBlocksHeatmapEmbed'
+import '@/styles/poisson-visualizations.css'
+
+## Introduction
+
+When was the last time you had a good day of work? The kind where you got into flow and stayed there long enough to think deeply about a problem?
+
+Paul Graham wrote [about this](https://paulgraham.com/makersschedule.html) in 2009: a single meeting can wreck an entire half-day for someone who needs uninterrupted time to build something. Sixteen years later, we've added Slack, Teams, always-on video calls, and a culture of instant responsiveness. The problem has gotten worse, with the pandemic turning things to 11 but the conversation stays frustratingly vague. We know focus is dying. We can't say how bad it is or what would fix it.
+
+In this post, I'll show you what interruption-driven work looks like when you model it with math. Three simple parameters determine whether your day is productive or a write-off. We'll simulate hundreds of days and build a map of the entire parameter space so you can see exactly where you are and what happens when you change.
+
+## One Day in Detail
+
+Let's start by drawing what one of those "lost days" actually looks like.
+
+<div class="not-prose my-8 w-full">
+  <DayDetailEmbed
+    lambda={2.0}
+    delta={20}
+    len={60}
+    seed={42}
+    day={5}
+    showNavigation={false}
+    client:load
+  />
+</div>
+
+The visualization above shows an 8-hour workday as a timeline. Green segments represent real, uninterrupted focus blocks—the time when you're genuinely working on the problem. Red lines are interruptions: a Slack DM, a meeting, someone asking a question. The hatched gray zones are recovery time—you're back at your desk, but you're not back _in_ the problem yet. The amber and red sections are where you're partially in the zone—where your focus is broken before 30 or 15 minutes respectively. The goal is to be in the green (or blue).
+
+Notice how often the red interruptions land. Notice how much of your 8 hours is actually gray recovery time, not green focus time. Count how many genuine 60-minute blocks you got: just one. You spent the whole day "working," but very little of it was uninterrupted work.
+
+And here's a good day, for comparison's sake:
+
+<div class="not-prose my-8 w-full">
+  <DayDetailEmbed
+    lambda={1.5}
+    delta={11}
+    len={60}
+    target={2}
+    seed={12345}
+    day={36}
+    showNavigation={false}
+    client:load
+  />
+</div>
+
+So, how do we go from the bad day to the good one? It comes down to three numbers: how often you're interrupted, how long it takes to recover, and how much unbroken time your work requires.
+
+Let's walk through them.
+
+## Three Knobs That Secretly Define Your Day
+
+| Symbol     | What it measures                                 | Units    |
+| ---------- | ------------------------------------------------ | -------- |
+| λ (lambda) | How often you get interrupted                    | per hour |
+| Δ (delta)  | How long to regain focus after each interruption | minutes  |
+| θ (theta)  | Minimum block size for meaningful work           | minutes  |
+
+### λ (lambda): Interruptions
+
+Lambda (λ) is your interruption rate, measured in interruptions per hour (modeled as a [Poisson process](https://en.wikipedia.org/wiki/Poisson_point_process)). If λ = 2, you're getting interrupted, on average, twice every hour. In the timeline above, lambda determines how many red spikes you see.
+
+It's a function of your environment: how many meetings you have, how many Slack channels you're in, how many people feel entitled to "just a quick question," whether your company culture treats every message as urgent. Some people, like managers and executives, get interrupted a lot. Others usually don't, but their λ can spike during on-call rotations or triage weeks. We try to model that by randomness.
+
+Most people dramatically underestimate their real λ, but we'll get to that in a moment.
+
+<Callout variant="note" title="On Poisson distributions">
+  Our simulations model interruptions as a Poisson process, which assumes they
+  arrive randomly and uniformly throughout the day. In reality, interruptions
+  tend to cluster. Think back-to-back meetings, Slack storms after a big
+  announcement, email bursts when you return from lunch. This clustering cuts
+  both ways: sometimes it leaves clean gaps (your afternoon block after a
+  morning full of meetings), but often it makes things worse because clustered
+  interruptions compound recovery time and eliminate any chance of regaining
+  focus between hits.
+</Callout>
+
+### Δ (delta): Recovery Period
+
+Delta (Δ) is your recovery time in minutes. When someone interrupts you, you don't instantly return to full productivity the moment they walk away. Your brain needs time to reload the context, reconstruct the mental model, and remember what you were doing. That's delta. In the timeline, it's the width of those hatched gray bars after every red spike.
+
+Delta varies by person and by task. It's shorter if you left yourself good breadcrumbs before the interruption. It's longer if you're doing deep, complex work. But it's never zero. More depressingly, even a "quick two-minute question" can cost you [15–20 minutes of recovery time](https://ics.uci.edu/~gmark/chi08-mark.pdf).
+
+### θ (theta): Focus Threshold
+
+Theta (θ) is the minimum uninterrupted time required for a "unit" of real work. If you're writing code, reviewing a design, or solving a hard problem, you probably need at least 30–60 minutes of continuous focus to make meaningful progress. That's your theta.
+
+It's also why five 10-minute blocks don't add up to one 50-minute block. When things are below your theta, things just don't compound. Another way to think of this as **fragmentation**: interruptions can break your time into pieces too small to be useful, even if the total time is the same.
+
+<div class="not-prose my-8 w-full">
+  <DayDetailEmbed
+    lambda={2.2}
+    delta={19}
+    len={60}
+    seed={12345}
+    day={4}
+    showNavigation={true}
+    showBackButton={false}
+    client:load
+  />
+</div>
+
+In our timeline visualizations, theta is what we're measuring the green and blue blocks against. If your theta is 60 minutes and you only have 45-minute blocks, you're not getting any "real" work done by your own standards.
+
+**Capacity**
+
+I know I said three numbers, but capacity is just a result of all three so I'll sneak this in.
+
+Given what a day looks like based on these three parameters, we can write a simple formula that counts how many units of real work you accomplish in a day.
+
+$$
+C(\theta) = \sum_{i=1}^{n} \left\lfloor \frac{d_i}{\theta} \right\rfloor
+$$
+
+Where:
+
+- $d_i$ is the duration (in minutes) of focus block $i$
+- $\theta$ is your minimum uninterrupted time for one "unit" of real work
+- $\lfloor x \rfloor$ is the floor function (round down to the nearest integer)
+
+Based on all your focus blocks (the green and blue segments), we count how many theta-sized chunks fit. This is your day's "capacity" for productive work. The higher the capacity, the more productive you are.
+
+For illustration, here's a high capacity day:
+
+<div class="not-prose my-8 w-full">
+  <DayDetailEmbed
+    lambda={1.0}
+    delta={10}
+    len={60}
+    seed={88}
+    day={3}
+    showNavigation={false}
+    client:load
+  />
+</div>
+
+Notice the long stretches of uninterrupted green. Multiple 60-minute blocks. This day has high capacity. The math is on your side.
+
+**The Capacity Formula in Action**
+
+But things can (and will) go sideways. Suppose you have a day with three focus blocks: 90 minutes, 45 minutes, and 20 minutes. Your total focus time is 155 minutes. But how much _capacity_ do you have? It depends entirely on θ:
+
+| θ   | The Math                    | Final Capacity    |
+| --- | --------------------------- | ----------------- |
+| 30  | ⌊90/30⌋ + ⌊45/30⌋ + ⌊20/30⌋ | 3 + 1 + 0 = **4** |
+| 45  | ⌊90/45⌋ + ⌊45/45⌋ + ⌊20/45⌋ | 2 + 1 + 0 = **3** |
+| 60  | ⌊90/60⌋ + ⌊45/60⌋ + ⌊20/60⌋ | 1 + 0 + 0 = **1** |
+
+Same 155 minutes, yet the capacity slides all the way down from 4 to 1. This is why small changes in θ or block length can collapse your productivity. The floor function (⌊x⌋) is unforgiving. The math is not on your side this time.
+
+Once we write your day as a function of these three parameters—λ for how noisy your environment is, Δ for how sticky interruptions are, and θ for how demanding your work is—we can stop treating bad days as _vibes_ and start treating them as a model we can reason about.
+
+## 100 Days Under the Same Conditions
+
+So far, we've only looked at a single day, but one day can be a fluke—maybe you got lucky, or maybe you got unlucky. What happens if we simulate 100 days with the same λ, Δ, and θ?
+
+Luckily, computers make simulating many days trivial. Let's extend our model to actually simulate 100 days in a row and see all the visualizations together.
+
+<div class="not-prose my-8 w-full">
+  <DaysGridEmbed
+    lambda={2.0}
+    delta={20}
+    len={45}
+    target={2}
+    seed={42}
+    showOverlay={false}
+    client:load
+  />
+</div>
+
+On the grid above, each cell is one simulated 8-hour workday. The color encodes the longest continuous focus block you got that day. Darker, richer colors mean longer focus blocks—those are the high-capacity days. Dim, washed-out cells are the low-capacity days, where you never got more than 15–30 minutes of uninterrupted time.
+
+The above simulation was when things were cheery. But how about when things go sideways?
+
+<div class="not-prose my-8 w-full">
+  <DaysGridEmbed
+    lambda={3.0}
+    delta={20}
+    len={60}
+    target={2}
+    seed={42}
+    showOverlay={false}
+    client:load
+  />
+</div>
+
+That above is what 100 days look like under relatively harsh conditions: λ = 3.0 (three interruptions per hour), Δ = 20 (20-minute recovery), θ = 60 (you need 60-minute blocks to count as "real work"):
+
+OK, now that we've got our technology working, let's ground things in reality. It's time to dig into some research to feed our model some real λ and Δ.
+
+## What λ and Δ Look Like in Real Jobs
+
+Nothing I've mentioned here is very new. People in both academia and industry have been studying these figures for years. We know, for example, that the rate of interruptions and recovery times vary significantly across industries and even across roles within an industry.
+
+**Interruption Frequency:**
+
+| Finding                           | Source                                                                                                                              | Method                                     |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| Every 2 minutes during core hours | [Microsoft 2025 Work Trend Index](https://www.microsoft.com/en-us/worklab/work-trend-index/2025-the-year-the-frontier-firm-is-born) | M365 telemetry; top 20% of users by volume |
+| Every 3 min 5 sec activity switch | [González & Mark, CHI 2004](https://ics.uci.edu/~gmark/CHI2004.pdf)                                                                 | Field study shadowing tech workers         |
+| 7.5 alerts/hour (email + IM)      | [Iqbal & Horvitz, CHI 2007](https://dl.acm.org/doi/10.1145/1240624.1240730)                                                         | 27 information workers; 2,267 hours logged |
+
+**Recovery Time:**
+
+| Finding                             | Source                                                                      | Method                     |
+| ----------------------------------- | --------------------------------------------------------------------------- | -------------------------- |
+| 10–16 minutes in resumption phase   | [Iqbal & Horvitz, CHI 2007](https://dl.acm.org/doi/10.1145/1240624.1240730) | After email/IM interruptions |
+
+The research paints a consistent, if not depressing, picture. González & Mark found workers switch activities every 3 minutes on average. Iqbal & Horvitz measured 7.5 email/IM alerts per hour, with 10–16 minutes needed to resume work after each. And those (well-cited) studies are from years ago! The more recent Microsoft Work Trend Index reports that heavy collaborators see interruptions every 2 minutes. That's λ = 30!
+
+### What the Research Data Actually Looks Like
+
+If those numbers sound crazy or too high to be real, you are not alone. Look back at the visualizations you've seen so far in this post. We looked at days where λ is between 0 and 4 per hour, and Δ between 5 and 30 minutes. **These are the polite, toned-down versions of reality.** If González & Mark see activity switches every 3 minutes and Microsoft sees λ = 30 for heavy collaborators, our λ = 2–3 examples are actually best-case scenarios for many real environments.
+
+Here's 100 days with λ = 15 (roughly matching the González & Mark activity-switching data) and Δ = 25 (moderate recovery time):
+
+<div class="not-prose my-8 w-full">
+  <DaysGridEmbed
+    lambda={15}
+    delta={25}
+    len={60}
+    target={1}
+    seed={999}
+    showOverlay={false}
+    client:load
+  />
+</div>
+
+If you're looking at this grid and thinking "is the visualization broken?", you are not alone. I had the same reaction when I first generated it. The entire grid is gray. There's simply no time to work.
+
+But it's not broken. Here's what a single day with these parameters actually looks like. Make sure to browse back and forth to see if you can find a day with any focus blocks:
+
+<div class="not-prose my-8 w-full">
+  <DayDetailEmbed
+    lambda={15}
+    delta={25}
+    len={60}
+    seed={999}
+    day={1}
+    showNavigation={true}
+    showBackButton={false}
+    client:load
+  />
+</div>
+
+Now you can see why the grid appears uniformly gray. There really is no focus time. In fact there's not even any 15-minute block on almost any of the days. The day view is a dense wall of red interruptions, each triggering a gray recovery period. The tiny slivers of focus time are too short to even render at the grid scale. There are no greens, and there's a sole amber and a sole red. When you zoom out to 100 days, every single day looks like this. All dim, no pun intended.
+
+This is the [modern workplace](https://www.apa.org/news/podcasts/speaking-of-psychology/attention-spans). González & Mark measured activity switches every 3 minutes. Microsoft reports λ = 30 for heavy collaborators. These researchers are describing millions of people's actual working conditions. And at these parameters, the math is unambiguous: deep work is statistically near-impossible. We've normalized an environment where focus has been engineered out of the workday. No wonder everyone's stressed!
+
+Again, for the sake of argument, let's just go back to a "sane" workday. Same 8-hour days, same θ = 60, but now λ = 1.0 (one interruption per hour) and Δ = 10 (10-minute recovery).
+
+<div class="not-prose my-8 w-full">
+  <DaysGridEmbed
+    lambda={1.0}
+    delta={10}
+    len={60}
+    target={3}
+    seed={123}
+    showOverlay={false}
+    client:load
+  />
+</div>
+
+Look at that difference! Almost all days have more than three blocks of 60-minute work, meaning they light up like a Christmas tree. The dim "hopeless" days are much rarer. The _distribution_ has shifted—not because you suddenly became more disciplined, but because the system's parameters changed. The math has spoken.
+
+If you take away one thing from this post, it's this: **the variability you experience across days is structural forces working against you.** When λ and Δ are high, bad days are common. When λ and Δ are lower, good days become routine. Even small increases make conditions significantly worse.
+
+Moreover, "thanks to" randomness, you have a lot less control over what your day looks like. For example, here's a breezy day with almost no interruptions (λ = 1) and a short recovery period (Δ = 15). With not one, not two, but three 60+ minute blocks, this is a great day!
+
+<div class="not-prose my-8 w-full">
+  <DayDetailEmbed
+    lambda={1}
+    delta={15}
+    len={60}
+    seed={12345}
+    day={43}
+    showNavigation={false}
+    client:load
+  />
+</div>
+
+Yet it's also possible to have a bad day with the exact same parameters. Note that while you have multiple 45+ minute blocks, you simply can't get a single 60-minute block on this day.
+
+<div class="not-prose my-8 w-full">
+  <DayDetailEmbed
+    lambda={1}
+    delta={15}
+    len={60}
+    seed={12345}
+    day={50}
+    showNavigation={false}
+    client:load
+  />
+</div>
+
+You can't eliminate variance, unfortunately, but you can shift the distribution. In a good regime, with high capacity days as the norm, great days become normal and bad days become the exception you can absorb. If you want to take away two things from this post, remember that you can control things! We'll get to that later.
+
+## The Map of Deep Work
+
+OK, so far we've fixed the knobs (λ, Δ, θ) and watched the random outcomes (individual days, grids of 100 days) play out. But what if we could see the whole landscape at once—every combination of λ and Δ, and how they interact? Once again, computers to the rescue!
+
+<div class="not-prose my-8 w-full">
+  <FocusBlocksHeatmapEmbed
+    threshold={60}
+    showThresholdControl={true}
+    highlightedCells={[
+      { lambda: 1.0, delta: 10, color: '#22c55e' },
+      { lambda: 2.0, delta: 20, color: '#f59e0b' },
+      { lambda: 3.0, delta: 25, color: '#ef4444' },
+    ]}
+    client:load
+  />
+</div>
+
+That's what our heatmap does. The color shows the expected capacity (number of θ-minute blocks per day). Dark purple cells are hospitable to deep work. Light purple cells are hellish; you're lucky to get even one θ-block per day. I've also highlighted some cells, based on the research data above.
+
+- The **"good" world** (green border, λ = 1.0, Δ = 10) is better than most real-world environments. It's closer to a protected morning on a maker's schedule, or a team that's serious about focus time.
+- The **"typical" world** (amber border, λ = 2.0, Δ = 20) is still more generous than what González & Mark observed (activity switches every 3 minutes), but it's already rough for 60-minute deep work.
+- The **"terrible" world** (red border, λ = 3.0, Δ = 25) is a softened version of the heavy-collaborator world (30 interruptions/hour). The actual PM/team-lead reality often lives off the right edge of this chart.
+
+Now use the threshold control to toggle θ between 30, 45, and 60 minutes. Watch what happens to the three highlighted cells:
+
+- The green cell stays relatively dark even at θ = 60. This is high capacity: you can expect multiple 60-minute blocks per day.
+- The amber cell looks dark at θ = 30, lightens at θ = 45, and nearly washes out at θ = 60. The capacity collapses as θ increases. This is why you feel like you can handle small tasks but never get to the hard problems.
+- The red cell is basically washed out at any θ that matters. You are ruined. With such low capacity, even 30-minute blocks are rare.
+
+The point is that the capacity is very sensitive your theta. It's significantly harder to finish a longer task that will take 60 minutes than it is to finish two tasks that will take 30 minutes each. This will inform some of the remediation we'll get to later.
+
+<Callout variant="explanation" title="Monte Carlo Estimation" defaultOpen={false}>
+  To create heatmaps, we calculate the expected capacity for each combination of $(\lambda, \Delta, \theta)$.
+
+$$
+\lim_{N \to \infty} \frac{1}{N} \sum_{i=1}^{N} C_i = \mathbb{E}[C]
+$$
+
+Where:
+
+- $\mathbb{E}[C]$ = expected capacity (what we're estimating)
+- $N$ = number of simulations (typically 60)
+- $C_i$ = capacity observed in simulation $i$
+
+By the **Law of Large Numbers**, as $N \to \infty$, the sample mean converges to the true expected value:
+
+With $N = 60$, we get a good approximation with reasonable computation time.
+
+</Callout>
+
+## How a Better Day Actually Looks
+
+Now let's see what it means to actually _move_ on the map. We'll start in the "typical" world and watch what happens when we shift toward better territory.
+
+Here's the map with just the amber cell highlighted (λ = 2.0, Δ = 20):
+
+<div class="not-prose my-8 w-full">
+  <FocusBlocksHeatmapEmbed
+    threshold={60}
+    showThresholdControl={false}
+    highlightedCells={[{ lambda: 2.0, delta: 20, color: '#f59e0b' }]}
+    client:load
+  />
+</div>
+
+And here's what a day in that cell looks like:
+
+<div class="not-prose my-8 w-full">
+  <DayDetailEmbed
+    lambda={2.0}
+    delta={20}
+    len={60}
+    seed={43}
+    day={7}
+    showNavigation={false}
+    client:load
+  />
+</div>
+
+Lots of red interruptions. Wide gray recovery zones. Very few green blocks longer than 45 minutes. This is what a structurally difficult day looks like. And remember: λ = 2.0 is wildly generous compared to the research data.
+
+Now let's move to the green cell (λ = 1.0, Δ = 10):
+
+<div class="not-prose my-8 w-full">
+  <FocusBlocksHeatmapEmbed
+    threshold={60}
+    showThresholdControl={false}
+    highlightedCells={[{ lambda: 1.0, delta: 10, color: '#22c55e' }]}
+    client:load
+  />
+</div>
+
+And here's what a day in _that_ cell looks like:
+
+<div class="not-prose my-8 w-full">
+  <DayDetailEmbed
+    lambda={1.0}
+    delta={10}
+    len={60}
+    seed={123}
+    day={2}
+    showNavigation={false}
+    client:load
+  />
+</div>
+
+The difference is striking. Fewer interruptions. Narrower recovery zones. Multiple 60-minute focus blocks. The change in parameters is modest—one fewer interruption per hour, ten fewer minutes of recovery—but the impact on your day is dramatic.
+
+This is what "moving on the map" actually looks like. The next section covers how to do it.
+
+## How to Move Around the Map
+
+Let's get back to our heatmap:
+
+<div class="not-prose my-8 w-full">
+  <FocusBlocksHeatmapEmbed
+    threshold={60}
+    showThresholdControl={true}
+    highlightedCells={[
+      { lambda: 1.0, delta: 10, color: '#22c55e' },
+      { lambda: 2.0, delta: 20, color: '#f59e0b' },
+      { lambda: 3.0, delta: 25, color: '#ef4444' },
+    ]}
+    client:load
+  />
+</div>
+
+I hope that so far I have been able to make the case that you really want to go from the red cell to the green cell. And not just that, you want to be in a cell, wherever it might be, be it red, amber, or green, that your capacity is high. In other words, we want to move up the ladder (up and to the right) and then ideally change our map to a better one.
+
+### Reduce λ – Fewer Interruptions Per Hour
+
+Lambda is about **access**. The good news: it's the most impactful lever you have, based on the math. Doubling interruptions **more than doubles** the lost time due to chain interruptions (interruptions during recovery) and fragmentation (reducing
+capacity even when total time is the same).
+
+Here's an example of this in action. Consider the case that you want to find three 60-minute blocks on any given day. What would your chances be?
+
+Here's what your chances look like with λ=1.
+
+<div class="not-prose my-8 w-full">
+  <DaysGridEmbed
+    lambda={1.0}
+    delta={19}
+    len={60}
+    target={3}
+    seed={12345}
+    showOverlay={false}
+    client:load
+  />
+</div>
+
+There are exactly 70 days that fit that criteria. In other words, you have 70% chance of finding three 60-minute blocks on any given day.
+
+Let's increase the rate of interruptions. Here's λ=2, just _one more interruption per hour_ with the same random seed:
+
+<div class="not-prose my-8 w-full">
+  <DaysGridEmbed
+    lambda={2.0}
+    delta={19}
+    len={60}
+    target={3}
+    seed={12345}
+    showOverlay={false}
+    client:load
+  />
+</div>
+
+Now, there are only 14 days! Your chances of success went down by 5 times.
+
+Since λ is about access, in theory it's what you have the most control over. Protect your calendar, get fewer interruptions. Easy, right?
+
+Unfortunately, reality begs to differ. People in leadership positions want to be available to others, so they keep their calendars open. And people in IC roles often don't get to control their calendars as much as they'd like—those pesky managers keep scheduling meeting after meeting.
+
+But, not all hope is lost. [The González study](https://ics.uci.edu/~gmark/CHI2004.pdf) found that for knowledge workers, almost half the interruptions are self-inflicted. While it is true very few people have control over their calendars these days, we are the masters of our destiny and captains of our ship more than we think when it comes to interruptions. Another [similar study](https://dl.acm.org/doi/abs/10.1145/3173574.3173666) also found that people who blocked interruptions found their job satisfaction to be much higher.
+
+Checking your inbox only a few times a day—or even just twice—pays huge dividends. In my experience, almost nothing is actually urgent, and it's better to train people that getting your attention requires effort than to train them that you're always available. Whatever you do, any effort you put in here will be worth it.
+
+### Match θ to Reality – Design Tasks for Your Environment
+
+Theta is different from λ and Δ because you usually can't change the nature of the work itself. If you're working on a hard problem that genuinely requires 90 minutes of continuous thought, that's just θ = 90. You are SOL.
+
+But you _can_ design your day as a portfolio of tasks with different θ values, and match them to your realistic λ and Δ conditions. Remember, this is you changing your threshold on that interactive map above regardless of which cell you are in. **The goal here is to aim for smaller theta work.**
+
+<div class="not-prose my-8 flex w-full flex-col gap-4 md:flex-row">
+  <div class="flex-1">
+    <p class="mb-2 text-center font-semibold">θ = 30 minutes</p>
+    <FocusBlocksHeatmapEmbed
+      threshold={30}
+      showThresholdControl={false}
+      highlightedCells={[
+        { lambda: 1.0, delta: 10, color: '#22c55e' },
+        { lambda: 2.0, delta: 20, color: '#f59e0b' },
+        { lambda: 3.0, delta: 25, color: '#ef4444' },
+      ]}
+      client:load
+    />
+  </div>
+  <div class="flex-1">
+    <p class="mb-2 text-center font-semibold">θ = 60 minutes</p>
+    <FocusBlocksHeatmapEmbed
+      threshold={60}
+      showThresholdControl={false}
+      highlightedCells={[
+        { lambda: 1.0, delta: 10, color: '#22c55e' },
+        { lambda: 2.0, delta: 20, color: '#f59e0b' },
+        { lambda: 3.0, delta: 25, color: '#ef4444' },
+      ]}
+      client:load
+    />
+  </div>
+</div>
+
+**Break large projects into smaller tasks:**
+
+If your environment has λ = 3 and you're trying to do θ = 90 work, you're going to have a bad time. The heatmap says so. But if you can decompose that work into tasks with θ = 30, suddenly it becomes feasible. So, whenever you have a big project, think about the independent pieces of it that you can attack.
+
+For example, "design and implement the new authentication flow" is θ = 90 work. But you can decompose it: sketch the state machine (30 min), write the token validation logic (30 min), build the UI component (30 min), wire up the error handling (30 min). Each piece is independently completable and doesn't require holding the whole system in your head at once.
+
+Same with product work: "write the PRD" is θ = 90, but "define the problem statement" is θ = 20, "list user stories" is θ = 30, "draft success metrics" is θ = 20.
+
+Beyond the mathematical advantage, there's a psychological one: finishing a task gives you a small hit of momentum that you can ride to the next task. A day with four completed θ = 30 tasks feels productive, which makes you more likely to protect your focus tomorrow. A day where you made "some progress" on one θ = 90 task often feels like you got nothing done, even if the raw minutes were similar.
+
+**Reserve low-λ windows for high-θ work:**
+
+If you can defend a 2-hour window early in the morning with λ ≈ 0, that's where you do your θ = 60–90 work. Use the rest of your day (higher λ) for smaller tasks that tolerate fragmentation.
+
+<div class="not-prose my-8 flex w-full flex-col gap-4 md:flex-row">
+  <div class="flex-1">
+    <p class="mb-2 text-center font-semibold">θ = 20 minutes</p>
+    <FocusBlocksHeatmapEmbed
+      threshold={20}
+      showThresholdControl={false}
+      highlightedCells={[
+        { lambda: 1.0, delta: 10, color: '#22c55e' },
+        { lambda: 2.0, delta: 20, color: '#f59e0b' },
+        { lambda: 3.0, delta: 25, color: '#ef4444' },
+      ]}
+      client:load
+    />
+  </div>
+  <div class="flex-1">
+    <p class="mb-2 text-center font-semibold">θ = 90 minutes</p>
+    <FocusBlocksHeatmapEmbed
+      threshold={90}
+      showThresholdControl={false}
+      highlightedCells={[
+        { lambda: 1.0, delta: 10, color: '#22c55e' },
+        { lambda: 2.0, delta: 20, color: '#f59e0b' },
+        { lambda: 3.0, delta: 25, color: '#ef4444' },
+      ]}
+      client:load
+    />
+  </div>
+</div>
+
+Remember, this is not the same as "lowering your λ" but instead realizing that certain times of day (or week) have predictable interrupt patterns. You can't always get what you want, but you might get what you need, if your theta is right for the time. Say, if you're a PM or team lead living at λ = 20, starting a θ = 60 project at 3pm is fantasy. It's extremely unlikely you'll get a 60-minute block ever with a lambda like that but it's practically impossible that you'll get one that late in the day.
+
+You need to either carve out radically different conditions or accept that this kind of work simply doesn't happen in your normal day. I don't want to get into the 996 discourse right now but there is a reason you see so many managers work early in the mornings before others, or on Sunday nights.
+
+**Remember the Map:**
+
+Remember, when you adjust theta (carve out your work), you're not moving on the map. You're _choosing a different map_. When you toggle the threshold control on the heatmap from θ = 60 to θ = 30, you're asking a different question: "What environment do I need for 30-minute work instead of 60-minute work?" The map changes, and suddenly the "typical" (amber) and "terrible" (red) cells look more survivable.
+
+### Reduce Δ – Shorten Recovery Time
+
+Delta is about **stickiness**. It's how long interruptions linger after they're technically over. You can't make Δ zero, but you can shave minutes off each recovery, and those minutes compound quickly.
+
+Iqbal & Horvitz found that workers take 10–16 minutes to resume work after email/IM interruptions. The variance is huge, and much of it comes from preparedness and task similarity. If you are or your task is on the high end of that delta (Δ ≈ 15+), small hygiene improvements can shave off valuable minutes.
+
+- **Leave yourself breadcrumbs** before switching tasks. When you're interrupted, send yourself a Slack message about what you were doing and what comes next. This sounds quirky, but it works.
+- **Avoid wide context switches.** If you're interrupted while coding, handling a quick code-review question is less disruptive than handling a recruiting question. Minimize cross-domain bouncing when possible.
+- **Small rituals to re-enter focus.** Some people re-read the last few lines of code they wrote, or scan their notes, or take three deep breaths. Find whatever works for you.
+
+## From "Bad Days" to a Tuneable System
+
+Look, this model is wrong, like [all other models are](https://en.wikipedia.org/wiki/All_models_are_wrong). You can't [reverse Taylorism](https://en.wikipedia.org/wiki/Scientific_management) your way out of a broken calendar by (re-)inventing Greek letters. But wrong models can still be useful if they help you see the system clearly enough to change it.
+
+My point is this: **given your λ and Δ, deep work is mathematically rare unless you deliberately design for it.** You're not uniquely undisciplined. Stop feeling bad. You're operating in a system where the default state is fragmentation. The world is out there to get you!
+
+But hey, good news! This system is very sensitive to small inputs. That's a liability when the universe decides to screw you, but it's also leverage when _you_ intervene. Dropping λ from 3 to 2, just one fewer interruption per hour each day, can transform your week. Learning how to split your tasks into smaller chunks by picking small θ can make your life a whole lot easier. Cutting Δ from 25 to 15 minutes can mean the difference between a hellish day or a passable one. You don't have to win every battle to win the war.
+
+Try this: pick one week and defend a single 90-minute block each morning. Treat that block as your λ/Δ/θ lab. No meetings, no Slack, no "quick questions." Measure what you accomplish in that block versus the rest of your day.
+
+I suspect you'll see the parameters at work. And once you see them, you can't unsee them.
+
+## One More Thing...
+
+If you want to experiment with the parameters yourself, try the [Interruptions Simulator](/tools/interruptions/). I'll write more about how and why I built that tool later!
