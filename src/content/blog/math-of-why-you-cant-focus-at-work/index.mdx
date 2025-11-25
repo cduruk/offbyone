@@ -15,17 +15,15 @@ import '@/styles/poisson-visualizations.css'
 
 ## Introduction
 
-When was the last time you had a good day of work? The kind where you felt like you actually made progress on something hard, where you got into flow and stayed there long enough to think deeply about a problem?
+When was the last time you had a good day of work? The kind where you got into flow and stayed there long enough to think deeply about a problem?
 
-Paul Graham wrote about this back in 2009 in ["Maker's Schedule, Manager's Schedule"](http://www.paulgraham.com/makersschedule.html). He explained how a single meeting can wreck an entire half-day for someone who needs uninterrupted time to build something. That was 15 years ago, and the problem has only gotten worse. We've added Slack, Teams, always-on video calls, "quick syncs," and a culture of instant responsiveness that treats every message like it deserves an immediate reply.
+Paul Graham wrote [about this](https://paulgraham.com/makersschedule.html) in 2009: a single meeting can wreck an entire half-day for someone who needs uninterrupted time to build something. Fifteen years later, we've added Slack, Teams, always-on video calls, and a culture of instant responsiveness. The problem has gotten worse, with the pandemic turning things to 11 but the conversation stays frustratingly vague. We know focus is dying. We can't say how bad it is or what would fix it.
 
-And yet, when people complain about this, it doesn't stick. When they say they can't focus anymore, that they're constantly interrupted, that their days feel like chaos, the conversation stays frustratingly vague. We know it's bad. You know it's bad. But we can't say _how_ bad. We can't quantify what's happening or predict what would happen if things changed. We're stuck arguing about vibes instead of facts.
-
-In this post, I'll show you what interruption-driven work actually looks like when you model it with math. We'll start by drawing a single day as a timeline—interruptions, recovery periods, and the fragments of focus time that remain. Then I'll show you the three simple parameters that determine whether your day is productive or a write-off. We'll simulate hundreds of days under the same conditions, and we'll build a map of the entire parameter space so you can see exactly where you are and what happens when you try to move to better territory.
+In this post, I'll show you what interruption-driven work looks like when you model it with math. Three simple parameters determine whether your day is productive or a write-off. We'll simulate hundreds of days and build a map of the entire parameter space so you can see exactly where you are and what happens when you change.
 
 ## One Day in Detail
 
-Let's start by drawing what one of those "lost days" actually looks like. The visualization below shows an 8-hour workday as a timeline. Green segments represent real, uninterrupted focus blocks—the time when you're genuinely working on the problem. Red spikes are interruptions: a Slack ping, a meeting, someone asking a question. The hatched gray zones are recovery time—you're back at your desk, but you're not back _in_ the problem yet. The amber and red sections are where you're partially in the zone—where your focus is broken before 30 or 15 minutes respectively. The goal is to be in the green (or blue).
+Let's start by drawing what one of those "lost days" actually looks like.
 
 <div class="not-prose my-8 w-full">
   <DayDetailEmbed
@@ -39,7 +37,25 @@ Let's start by drawing what one of those "lost days" actually looks like. The vi
   />
 </div>
 
-Notice how often the red interruptions land. Notice how much of your 8 hours is actually gray recovery time, not green focus time. Count how many genuine 60-minute blocks you got: just one. You spent the whole day "working," but very little of it was uninterrupted work. Is this a good day? If not, how do we fix this?
+The visualization above shows an 8-hour workday as a timeline. Green segments represent real, uninterrupted focus blocks—the time when you're genuinely working on the problem. Red spikes are interruptions: a Slack ping, a meeting, someone asking a question. The hatched gray zones are recovery time—you're back at your desk, but you're not back _in_ the problem yet. The amber and red sections are where you're partially in the zone—where your focus is broken before 30 or 15 minutes respectively. The goal is to be in the green (or blue).
+
+Notice how often the red interruptions land. Notice how much of your 8 hours is actually gray recovery time, not green focus time. Count how many genuine 60-minute blocks you got: just one. You spent the whole day "working," but very little of it was uninterrupted work.
+
+And here's a good day, for comparison's sake:
+
+<div class="not-prose my-8 w-full">
+  <DayDetailEmbed
+    lambda={2.2}
+    delta={19}
+    len={60}
+    seed={12345}
+    day={65}
+    showNavigation={false}
+    client:load
+  />
+</div>
+
+So, how do we go from the bad day to the good one?
 
 In our model, we can boil the day down to three numbers that we can (try to) control.
 
@@ -141,7 +157,7 @@ Here's a very quick, ChatGPT-derived version of the latest research:
 | Job Role            | Interruptions/Hour | Recovery Time | Source                                                                                                                                      |
 | ------------------- | ------------------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | Knowledge Workers   | ~15                | ~23 min       | [Bailey et al., 2020](https://doi.org/10.1145/3313831.3376720)                                                                              |
-| PMs / Execs         | ~30 (every 2 min)  | Not specified | [Microsoft Work Trend Index, 2025](https://blogs.microsoft.com/blog/2025/04/23/the-2025-annual-work-trend-index-the-frontier-firm-is-born/) |
+| PMs / Execs         | ~30                | Not specified | [Microsoft Work Trend Index, 2025](https://blogs.microsoft.com/blog/2025/04/23/the-2025-annual-work-trend-index-the-frontier-firm-is-born/) |
 | Software Developers | 4–6                | 10–45 min     | [Meyer et al., 2017](https://doi.org/10.1145/3134690)                                                                                       |
 
 Bailey et al. found that knowledge workers face around 15 interruptions per hour—that's λ = 15, or one interruption every four minutes. The Microsoft Work Trend Index reports that heavy collaborators (PMs, team leads) can see 30 interruptions per hour—λ = 30, or one every two minutes. Even software developers, who often have more control over their environment, still face 4–6 interruptions per hour and take 10–45 minutes to fully recover.
@@ -165,7 +181,7 @@ So, here's what 100 days look like under relatively harsh conditions: λ = 3.0 (
     len={60}
     target={2}
     seed={42}
-    showOverlay={true}
+    showOverlay={false}
     client:load
   />
 </div>
@@ -173,6 +189,40 @@ So, here's what 100 days look like under relatively harsh conditions: λ = 3.0 (
 Look at the distribution and try not to cry. Most days are dim, meaning we haven't hit our target (enough focus blocks to hit our theta target). In fact, there are barely any focus blocks over 30 minutes. A few days are brighter, but they're rare. This is what it feels like when you say "some weeks, I just can't get anything done." Given these parameters, the math makes it structurally difficult to have consistent high-capacity days.
 
 And remember: λ = 3.0 is _generous_ compared to the research. Bailey et al. report λ ≈ 15 for general knowledge workers. Meyer et al. report λ = 4–6 for developers. Even this "typical" grid is more forgiving than many real-world environments.
+
+Want more evidence? Here's another way to look at this. Consider the case that you want to find three 60-minute blocks on any given day. What would your chances be?
+
+Here's what that looks like with λ=1.
+
+<div class="not-prose my-8 w-full">
+  <DaysGridEmbed
+    lambda={1.0}
+    delta={19}
+    len={60}
+    target={3}
+    seed={12345}
+    showOverlay={false}
+    client:load
+  />
+</div>
+
+There are exactly 70 days that fit that criteria. So your chances are 70%.
+
+Let's increase the rate of interruptions. Here's λ=2, just one more interruption per hour with the same random seed:
+
+<div class="not-prose my-8 w-full">
+  <DaysGridEmbed
+    lambda={2.0}
+    delta={19}
+    len={60}
+    target={3}
+    seed={12345}
+    showOverlay={false}
+    client:load
+  />
+</div>
+
+Now, there are only 14 days! Your chances of success went down by 5 times.
 
 ### What the Research Data Actually Looks Like
 
@@ -187,7 +237,7 @@ Here's 100 days with λ = 15 (the Bailey et al. knowledge worker data—one inte
     len={60}
     target={1}
     seed={999}
-    showOverlay={true}
+    showOverlay={false}
     client:load
   />
 </div>
@@ -203,12 +253,13 @@ But it's not broken. Here's what a single day at these parameters actually looks
     len={60}
     seed={999}
     day={1}
-    showNavigation={false}
+    showNavigation={true}
+    showBackButton={false}
     client:load
   />
 </div>
 
-Now you can see why the grid appears uniformly gray. There's simply no focus time—not even 15-minute blocks. The day view is a dense wall of red interruptions, each triggering a gray recovery period. The tiny slivers of green focus time are too short to even render at the grid scale. When you zoom out to 100 days, every single day looks like this—all dim.
+Now you can see why the grid appears uniformly gray. There's simply no focus time. In fact there's even any 15-minute blocks. The day view is a dense wall of red interruptions, each triggering a gray recovery period. The tiny slivers of green focus time are too short to even render at the grid scale. When you zoom out to 100 days, every single day looks like this—all dim.
 
 This is the [modern workplace](https://www.apa.org/news/podcasts/speaking-of-psychology/attention-spans). Bailey et al. measured λ = 15 for general knowledge workers. Microsoft reports λ = 30 for heavy collaborators. These researchers are describing millions of people's actual working conditions. And at these parameters, the math is unambiguous: deep work is statistically near-impossible. We've normalized an environment where focus has been engineered out of the workday. No wonder everyone's stressed!
 
@@ -221,7 +272,7 @@ Now let's see what happens if we move to a better regime. Same 8-hour days, same
     len={60}
     target={3}
     seed={123}
-    showOverlay={true}
+    showOverlay={false}
     client:load
   />
 </div>
@@ -262,7 +313,7 @@ You can't eliminate variance, unfortunately, but you can shift the distribution.
 
 ## The Map of Deep Work
 
-So far we've fixed the knobs (λ, Δ, θ) and watched the random outcomes (individual days, grids of 100 days). 
+So far we've fixed the knobs (λ, Δ, θ) and watched the random outcomes (individual days, grids of 100 days).
 
 Now let's see what happens when we actually turn those knobs—when we vary λ and Δ systematically and measure the result.
 
@@ -389,21 +440,21 @@ Let's get back to our map:
   />
 </div>
 
-I hope that so far I have been able to make the case that you really want to go from the red cell to the green cell. And not just that, you want to be in a cell, wherever it might be, be it red, amber, or green, that your capacity is high. Let's talk about doing that! 
+I hope that so far I have been able to make the case that you really want to go from the red cell to the green cell. And not just that, you want to be in a cell, wherever it might be, be it red, amber, or green, that your capacity is high. Let's talk about doing that!
 
 You have three levers. Let's take them one at a time.
 
 ### Reduce λ – Fewer Interruptions Per Hour
 
-Lambda is about **access**. The good news: it's the most impactful lever you have, based on the math. And since it's about access, in theory it's what you have the most control over. Protect your calendar, get fewer interruptions. Easy, right?
+Lambda is about **access**. The good news: it's the most impactful lever you have, based on the math.
 
-<Callout variant="important" title="Non-Linear Impact">
-  Doubling interruptions **more than doubles** the lost time due to chain
-  interruptions (interruptions during recovery) and fragmentation (reducing
-  capacity even when total time is the same).
-</Callout>
+And since it's about access, in theory it's what you have the most control over. Protect your calendar, get fewer interruptions. Easy, right?
 
 Unfortunately, reality begs to differ. People in leadership positions want to be available to others, so they keep their calendars open. And people in IC roles often don't get to control their calendars as much as they'd like—those pesky managers keep scheduling meeting after meeting.
+
+Doubling interruptions **more than doubles** the lost time due to chain
+interruptions (interruptions during recovery) and fragmentation (reducing
+capacity even when total time is the same).
 
 However, there are still things you can do. Checking your inbox only a few times a day—or even just twice—pays huge dividends. In my experience, almost nothing is actually urgent, and it's better to train people that getting your attention requires effort than to train them that you're always available.
 
@@ -433,9 +484,9 @@ But you _can_ design your day as a portfolio of tasks with different θ values, 
 
 If your environment has λ = 3 and you're trying to do θ = 90 work, you're going to have a bad time. The heatmap says so. But if you can decompose that work into tasks with θ = 30, suddenly it becomes feasible. So, whenever you have a big project, think about the independent pieces of it that you can attack.
 
-For example, "design and implement the new authentication flow" is θ = 90 work. But you can decompose it: sketch the state machine (30 min), write the token validation logic (30 min), build the UI component (30 min), wire up the error handling (30 min). Each piece is independently completable and doesn't require holding the whole system in your head at once. 
+For example, "design and implement the new authentication flow" is θ = 90 work. But you can decompose it: sketch the state machine (30 min), write the token validation logic (30 min), build the UI component (30 min), wire up the error handling (30 min). Each piece is independently completable and doesn't require holding the whole system in your head at once.
 
-Same with product work: "write the PRD" is θ = 90, but "define the problem statement" is θ = 20, "list user stories" is θ = 30, "draft success metrics" is θ = 20. 
+Same with product work: "write the PRD" is θ = 90, but "define the problem statement" is θ = 20, "list user stories" is θ = 30, "draft success metrics" is θ = 20.
 
 Beyond the mathematical advantage, there's a psychological one: finishing a task gives you a small hit of momentum that you can ride to the next task. A day with four completed θ = 30 tasks feels productive, which makes you more likely to protect your focus tomorrow. A day where you made "some progress" on one θ = 90 task often feels like you got nothing done, even if the raw minutes were similar.
 
@@ -463,4 +514,4 @@ Try this: pick one week and defend a single 90-minute block each morning. Treat 
 
 ## One More Thing...
 
-If you want to experiment with the parameters yourself, try the [Interruptions Simulator](/tools/interruptions/). I'll write more about how and why I built that tool later! 
+If you want to experiment with the parameters yourself, try the [Interruptions Simulator](/tools/interruptions/). I'll write more about how and why I built that tool later!
