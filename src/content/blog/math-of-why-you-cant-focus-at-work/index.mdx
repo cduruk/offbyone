@@ -67,9 +67,9 @@ In our model, we can boil the day down to three numbers that we can (try to) con
 | Δ (delta)  | How long to regain focus after each interruption | minutes  |
 | θ (theta)  | Minimum block size for meaningful work           | minutes  |
 
-**λ (lambda): Interruptions.**
+### λ (lambda): Interruptions
 
-Lambda is your interruption rate, measured in interruptions per hour (modeled as a [Poisson process](https://en.wikipedia.org/wiki/Poisson_point_process)). If λ = 2, you're getting interrupted, on average, twice every hour. In the timeline above, lambda determines how many red spikes you see. It's a function of your environment: how many meetings you have, how many Slack channels you're in, how many people feel entitled to "just a quick question," whether your company culture treats every message as urgent. Some people, like managers and executives, get interrupted a lot. Others usually don't, but their λ can spike during on-call rotations or triage weeks. We try to model that by randomness.
+Lambda (λ) is your interruption rate, measured in interruptions per hour (modeled as a [Poisson process](https://en.wikipedia.org/wiki/Poisson_point_process)). If λ = 2, you're getting interrupted, on average, twice every hour. In the timeline above, lambda determines how many red spikes you see. It's a function of your environment: how many meetings you have, how many Slack channels you're in, how many people feel entitled to "just a quick question," whether your company culture treats every message as urgent. Some people, like managers and executives, get interrupted a lot. Others usually don't, but their λ can spike during on-call rotations or triage weeks. We try to model that by randomness.
 
 Most people dramatically underestimate their real λ, but we'll get to that in a moment.
 
@@ -84,15 +84,15 @@ Most people dramatically underestimate their real λ, but we'll get to that in a
   focus between hits.
 </Callout>
 
-**Δ (delta): Recovery Period.**
+### Δ (delta): Recovery Period
 
-Delta is your recovery time in minutes. When someone interrupts you, you don't instantly return to full productivity the moment they walk away. Your brain needs time to reload the context, reconstruct the mental model, and remember what you were doing. That's delta. In the timeline, it's the width of those hatched gray bars after every red spike.
+Delta (Δ) is your recovery time in minutes. When someone interrupts you, you don't instantly return to full productivity the moment they walk away. Your brain needs time to reload the context, reconstruct the mental model, and remember what you were doing. That's delta. In the timeline, it's the width of those hatched gray bars after every red spike.
 
 Delta varies by person and by task. It's shorter if you left yourself good breadcrumbs before the interruption. It's longer if you're doing deep, complex work. But it's never zero. More depressingly, even a "quick two-minute question" can cost you [15–20 minutes of recovery time](https://ics.uci.edu/~gmark/chi08-mark.pdf).
 
-**θ (theta): Focus Threshold.**
+### θ (theta): Focus Threshold
 
-Theta is the minimum uninterrupted time required for a "unit" of real work. If you're writing code, reviewing a design, or solving a hard problem, you probably need at least 30–60 minutes of continuous focus to make meaningful progress. That's your theta.
+Theta (θ) is the minimum uninterrupted time required for a "unit" of real work. If you're writing code, reviewing a design, or solving a hard problem, you probably need at least 30–60 minutes of continuous focus to make meaningful progress. That's your theta.
 
 It's also why five 10-minute blocks don't add up to one 50-minute block. When things are below your theta, things just don't compound. Another way to think of this as **fragmentation**: interruptions can break your time into pieces too small to be useful, even if the total time is the same.
 
@@ -197,7 +197,7 @@ Luckily, computers make simulating many days trivial.
 
 On the grid above, each cell is one simulated 8-hour workday. The color encodes the longest continuous focus block you got that day. Darker, richer colors mean longer focus blocks—those are the high-capacity days. Dim, washed-out cells are the low-capacity days, where you never got more than 15–30 minutes of uninterrupted time.
 
-So, that is what 100 days look like under relatively harsh conditions: λ = 3.0 (three interruptions per hour), Δ = 20 (20-minute recovery), θ = 60 (you need 60-minute blocks to count as "real work"):
+How about when things get bad?
 
 <div class="not-prose my-8 w-full">
   <DaysGridEmbed
@@ -211,43 +211,11 @@ So, that is what 100 days look like under relatively harsh conditions: λ = 3.0 
   />
 </div>
 
-Look at the distribution and try not to cry. Most days are dim, meaning we haven't hit our target (enough focus blocks to hit our theta target). In fact, there are barely any focus blocks over 30 minutes. A few days are brighter, but they're rare. This is what it feels like when you say "some weeks, I just can't get anything done." Given these parameters, the math makes it structurally difficult to have consistent high-capacity days.
+That above is what 100 days look like under relatively harsh conditions: λ = 3.0 (three interruptions per hour), Δ = 20 (20-minute recovery), θ = 60 (you need 60-minute blocks to count as "real work"):
+
+Look at the distribution and try not to cry. This is what it feels like when you say "some weeks, I just can't get anything done." Most days are dim, meaning we haven't hit our target (enough focus blocks to hit our theta target). In fact, there are barely any focus blocks over 30 minutes. A few days are brighter, but they're rare. Given these parameters, the math makes it structurally difficult to have consistent high-capacity days.
 
 And remember: λ = 3.0 is _generous_ compared to the research. Bailey et al. report λ ≈ 15 for general knowledge workers. Meyer et al. report λ = 4–6 for developers. Even this "typical" grid is more forgiving than many real-world environments.
-
-Want more evidence? Here's another way to look at this. Consider the case that you want to find three 60-minute blocks on any given day. What would your chances be?
-
-Here's what that looks like with λ=1.
-
-<div class="not-prose my-8 w-full">
-  <DaysGridEmbed
-    lambda={1.0}
-    delta={19}
-    len={60}
-    target={3}
-    seed={12345}
-    showOverlay={false}
-    client:load
-  />
-</div>
-
-There are exactly 70 days that fit that criteria. So your chances are 70%.
-
-Let's increase the rate of interruptions. Here's λ=2, just one more interruption per hour with the same random seed:
-
-<div class="not-prose my-8 w-full">
-  <DaysGridEmbed
-    lambda={2.0}
-    delta={19}
-    len={60}
-    target={3}
-    seed={12345}
-    showOverlay={false}
-    client:load
-  />
-</div>
-
-Now, there are only 14 days! Your chances of success went down by 5 times.
 
 ### What the Research Data Actually Looks Like
 
@@ -302,7 +270,7 @@ Now let's see what happens if we move to a better regime. Same 8-hour days, same
   />
 </div>
 
-Look at that difference! Almost all days have more than three blocks of 60-minute work, meaning they light up like a Christmas tree. The dim "hopeless" days are much rarer. The *distribution* has shifted—not because you suddenly became more disciplined, but because the system's parameters changed. The math has spoken.
+Look at that difference! Almost all days have more than three blocks of 60-minute work, meaning they light up like a Christmas tree. The dim "hopeless" days are much rarer. The _distribution_ has shifted—not because you suddenly became more disciplined, but because the system's parameters changed. The math has spoken.
 
 If you take away one thing from this post, it's this: **the variability you experience across days is structural forces working against you.** When λ and Δ are high, bad days are common. When λ and Δ are lower, good days become routine. Even small increases make conditions significantly worse.
 
@@ -471,39 +439,83 @@ You have three levers. Let's take them one at a time.
 
 ### Reduce λ – Fewer Interruptions Per Hour
 
-Lambda is about **access**. The good news: it's the most impactful lever you have, based on the math.
+Lambda is about **access**. The good news: it's the most impactful lever you have, based on the math. Doubling interruptions **more than doubles** the lost time due to chain interruptions (interruptions during recovery) and fragmentation (reducing
+capacity even when total time is the same).
 
-And since it's about access, in theory it's what you have the most control over. Protect your calendar, get fewer interruptions. Easy, right?
+Here's an example of this in action. Consider the case that you want to find three 60-minute blocks on any given day. What would your chances be?
+
+Here's what your chances look like with λ=1.
+
+<div class="not-prose my-8 w-full">
+  <DaysGridEmbed
+    lambda={1.0}
+    delta={19}
+    len={60}
+    target={3}
+    seed={12345}
+    showOverlay={false}
+    client:load
+  />
+</div>
+
+There are exactly 70 days that fit that criteria. In other words, you have 70% chance of finding three 60-minute blocks on any given day. 
+
+Let's increase the rate of interruptions. Here's λ=2, just *one more interruption per hour* with the same random seed:
+
+<div class="not-prose my-8 w-full">
+  <DaysGridEmbed
+    lambda={2.0}
+    delta={19}
+    len={60}
+    target={3}
+    seed={12345}
+    showOverlay={false}
+    client:load
+  />
+</div>
+
+Now, there are only 14 days! Your chances of success went down by 5 times.
+
+Since λ is about access, in theory it's what you have the most control over. Protect your calendar, get fewer interruptions. Easy, right?
 
 Unfortunately, reality begs to differ. People in leadership positions want to be available to others, so they keep their calendars open. And people in IC roles often don't get to control their calendars as much as they'd like—those pesky managers keep scheduling meeting after meeting.
 
-Doubling interruptions **more than doubles** the lost time due to chain
-interruptions (interruptions during recovery) and fragmentation (reducing
-capacity even when total time is the same).
-
-However, there are still things you can do. Checking your inbox only a few times a day—or even just twice—pays huge dividends. In my experience, almost nothing is actually urgent, and it's better to train people that getting your attention requires effort than to train them that you're always available.
-
-### Reduce Δ – Shorten Recovery Time
-
-Delta is about **stickiness**. It's how long interruptions linger after they're technically over. You can't make Δ zero, but you can shave minutes off each recovery, and those minutes compound quickly.
-
-Meyer et al. report that developers take 10–45 minutes to regain context after an interruption. The variance is huge, and much of it comes from preparedness and task similarity. If you're on the high end (Δ ≈ 40), small hygiene improvements can cut that in half.
-
-**Work hygiene:**
-
-- **Leave yourself breadcrumbs** before switching tasks. When you're interrupted, write a one-sentence note about what you were doing and what comes next. This shortens the reload time when you return.
-- **Avoid wide context switches.** If you're interrupted while coding, handling a quick code-review question is less disruptive than handling a budget question. Minimize cross-domain bouncing when possible.
-
-**Environment:**
-
-- **Reduce self-interruptions.** Delta applies to self-inflicted interruptions too (checking Twitter, tab-surfing). Every time you pull yourself out of flow, you pay the recovery cost.
-- **Small rituals to re-enter focus.** Some people re-read the last few lines of code they wrote, or scan their notes, or take three deep breaths. These rituals can shorten the reload time.
+Yet, not all hope is lost. Checking your inbox only a few times a day—or even just twice—pays huge dividends. In my experience, almost nothing is actually urgent, and it's better to train people that getting your attention requires effort than to train them that you're always available. Whatever you do, any effort you put in here will be worth it.
 
 ### Match θ to Reality – Design Tasks for Your Environment
 
 Theta is different from λ and Δ because you usually can't change the nature of the work itself. If you're working on a hard problem that genuinely requires 90 minutes of continuous thought, that's just θ = 90. You are SOL.
 
-But you _can_ design your day as a portfolio of tasks with different θ values, and match them to your realistic λ and Δ conditions. Remember, this is you changing your threshold on that interactive map above regardless of which cell you are in.
+But you _can_ design your day as a portfolio of tasks with different θ values, and match them to your realistic λ and Δ conditions. Remember, this is you changing your threshold on that interactive map above regardless of which cell you are in. **The goal here is to aim for smaller theta work.**
+
+<div class="not-prose my-8 flex w-full flex-col gap-4 md:flex-row">
+  <div class="flex-1">
+    <p class="mb-2 text-center font-semibold">θ = 30 minutes</p>
+    <FocusBlocksHeatmapEmbed
+      threshold={30}
+      showThresholdControl={false}
+      highlightedCells={[
+        { lambda: 1.0, delta: 10, color: '#22c55e' },
+        { lambda: 2.0, delta: 20, color: '#f59e0b' },
+        { lambda: 3.0, delta: 25, color: '#ef4444' },
+      ]}
+      client:load
+    />
+  </div>
+  <div class="flex-1">
+    <p class="mb-2 text-center font-semibold">θ = 60 minutes</p>
+    <FocusBlocksHeatmapEmbed
+      threshold={60}
+      showThresholdControl={false}
+      highlightedCells={[
+        { lambda: 1.0, delta: 10, color: '#22c55e' },
+        { lambda: 2.0, delta: 20, color: '#f59e0b' },
+        { lambda: 3.0, delta: 25, color: '#ef4444' },
+      ]}
+      client:load
+    />
+  </div>
+</div>
 
 **Break large projects into smaller tasks:**
 
@@ -526,6 +538,16 @@ Conversely, if you're a PM or team lead living at λ = 30, θ = 60 work at 3pm i
 **Remember the Map:**
 
 Remember, when you adjust theta (carve out your work), you're not moving on the map. You're _choosing a different map_. When you toggle the threshold control on the heatmap from θ = 60 to θ = 30, you're asking a different question: "What environment do I need for 30-minute work instead of 60-minute work?" The map changes, and suddenly the "typical" (amber) and "terrible" (red) cells look more survivable.
+
+### Reduce Δ – Shorten Recovery Time
+
+Delta is about **stickiness**. It's how long interruptions linger after they're technically over. You can't make Δ zero, but you can shave minutes off each recovery, and those minutes compound quickly.
+
+Meyer et al. report that developers take 10–45 minutes to regain context after an interruption. The variance is huge, and much of it comes from preparedness and task similarity. If you are or your task is on the high end of that delta (Δ ≈ 40), small hygiene improvements can cut that in half.
+
+- **Leave yourself breadcrumbs** before switching tasks. When you're interrupted, send yourself a Slack message about what you were doing and what comes next. This sounds quirky, but it works.
+- **Avoid wide context switches.** If you're interrupted while coding, handling a quick code-review question is less disruptive than handling a recruiting question. Minimize cross-domain bouncing when possible.
+- **Small rituals to re-enter focus.** Some people re-read the last few lines of code they wrote, or scan their notes, or take three deep breaths. Find whatever works for you.
 
 ## From "Bad Days" to a Tuneable System
 
