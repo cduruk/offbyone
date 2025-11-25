@@ -153,7 +153,7 @@ export const DayDetailView: React.FC<DayDetailViewProps> = ({
                 >
                   <ChevronLeft size={20} />
                 </Button>
-                <span className="text-lg font-semibold text-gray-900">
+                <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   Day #{day.dayIndex + 1}
                 </span>
                 <Button
@@ -198,7 +198,7 @@ export const DayDetailView: React.FC<DayDetailViewProps> = ({
                 >
                   <ChevronLeft size={22} />
                 </Button>
-                <span className="text-base font-semibold text-gray-900">
+                <span className="text-base font-semibold text-gray-900 dark:text-gray-100">
                   Day #{day.dayIndex + 1}
                 </span>
                 <Button
