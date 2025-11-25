@@ -283,9 +283,22 @@ Now use the threshold control to toggle θ between 30, 45, and 60 minutes. Watch
 
 ## How a Better Day Actually Looks
 
-Now let's return to the day-level view and see, visually, what it looks like to move from the "typical" (amber) regime to the "good" (green) one.
+Now let's see what it means to actually *move* on the map. We'll start in the "typical" regime and watch what happens when we shift toward better territory.
 
-Here's another day from the "typical" regime (λ = 2.0, Δ = 20, θ = 60), same parameters as the first timeline we saw:
+Here's the map with just the amber cell highlighted (λ = 2.0, Δ = 20):
+
+<div class="not-prose my-8 w-full">
+  <FocusBlocksHeatmapEmbed
+    threshold={60}
+    showThresholdControl={false}
+    highlightedCells={[
+      { lambda: 2.0, delta: 20, color: '#f59e0b' },
+    ]}
+    client:load
+  />
+</div>
+
+And here's what a day in that cell looks like:
 
 <div class="not-prose my-8 w-full">
   <DayDetailEmbed
@@ -299,9 +312,22 @@ Here's another day from the "typical" regime (λ = 2.0, Δ = 20, θ = 60), same 
   />
 </div>
 
-Look familiar? Lots of red interruptions. Wide gray recovery zones. Very few green blocks longer than 45 minutes. This is what a structurally difficult day looks like. And remember: λ = 2.0 is actually generous compared to the research data—many real environments have λ = 4, 6, or even 15.
+Lots of red interruptions. Wide gray recovery zones. Very few green blocks longer than 45 minutes. This is what a structurally difficult day looks like—and remember, λ = 2.0 is actually generous compared to the research data.
 
-Now here's a day from the "good" regime (λ = 1.0, Δ = 10, θ = 60):
+Now let's move to the green cell (λ = 1.0, Δ = 10):
+
+<div class="not-prose my-8 w-full">
+  <FocusBlocksHeatmapEmbed
+    threshold={60}
+    showThresholdControl={false}
+    highlightedCells={[
+      { lambda: 1.0, delta: 10, color: '#22c55e' },
+    ]}
+    client:load
+  />
+</div>
+
+And here's what a day in *that* cell looks like:
 
 <div class="not-prose my-8 w-full">
   <DayDetailEmbed
@@ -315,11 +341,9 @@ Now here's a day from the "good" regime (λ = 1.0, Δ = 10, θ = 60):
   />
 </div>
 
-The difference is striking. Fewer interruptions. Narrower recovery zones. More and longer green focus blocks. You can see multiple 60-minute chunks—actual capacity for deep work.
+The difference is striking. Fewer interruptions. Narrower recovery zones. Multiple 60-minute focus blocks. The change in parameters is modest—one fewer interruption per hour, ten fewer minutes of recovery—but the impact on your day is dramatic.
 
-This is what happens when you move from the "typical" highlighted cell on the heatmap to the "good" one. The change in parameters is modest: λ drops from 2.0 to 1.0 (one fewer interruption per hour), and Δ drops from 20 to 10 (ten fewer minutes of recovery). But the impact on your day is dramatic.
-
-The point is not that you need to hit these exact numbers. The point is that **you have levers you can pull**, and moving even partway toward the "good" regime makes a visible, measurable difference.
+This is what "moving on the map" actually looks like. The next section covers how to do it.
 
 ## How to Move Around the Map
 
