@@ -76,7 +76,7 @@ In the timeline, theta is what you're measuring the green blocks against. If you
 
 **Capacity**
 
-I know I said three numbers but capacity is just a result of all three. Given how a day looks like based on these three parameters, we can write a simple formula that counts how many units of real work you accomplish in a day. Given all your focus blocks (the green and blue segments), we count how many theta-sized chunks fit. You can call this "the capacity" of your day to carry enough blocks for you. The higher the capacity, the more productive you are in a given day.
+I know I said three numbers but capacity is just a result of all three. Given how a day looks like based on these three parameters, we can write a simple formula that counts how many units of real work you accomplish in a day. 
 
 $$
 C(\theta) = \sum_{i=1}^{n} \left\lfloor \frac{d_i}{\theta} \right\rfloor
@@ -88,7 +88,9 @@ Where:
 - $\theta$ is your minimum uninterrupted time for one "unit" of real work
 - $\lfloor x \rfloor$ is the floor function (round down to the nearest integer)
 
-In plain English: for each focus block, divide its length by theta and round down. Then add them all up. That's your capacity for the day.
+Given all your focus blocks (the green and blue segments), we count how many theta-sized chunks fit. You can call this "the capacity" of your day to carry enough blocks for you. The higher the capacity, the more productive you are in a given day.
+
+Here's a high capacity day:
 
 <div class="not-prose my-8 w-full">
   <DayDetailEmbed
@@ -103,6 +105,18 @@ In plain English: for each focus block, divide its length by theta and round dow
 </div>
 
 Notice the long stretches of uninterrupted green. Multiple 60-minute blocks. This day has high capacity—the math is working in your favor.
+
+**The Capacity Formula in Action**
+
+But things can go sideways. Suppose you have a day with three focus blocks: 90 minutes, 45 minutes, and 20 minutes. Your total focus time is 155 minutes. But how much _capacity_ do you have? It depends entirely on θ:
+
+| θ (minutes) | Calculation                 | Capacity          |
+| ----------- | --------------------------- | ----------------- |
+| 30          | ⌊90/30⌋ + ⌊45/30⌋ + ⌊20/30⌋ | 3 + 1 + 0 = **4** |
+| 45          | ⌊90/45⌋ + ⌊45/45⌋ + ⌊20/45⌋ | 2 + 1 + 0 = **3** |
+| 60          | ⌊90/60⌋ + ⌊45/60⌋ + ⌊20/60⌋ | 1 + 0 + 0 = **1** |
+
+Same 155 minutes. Capacity ranges from 4 down to 1. This is why small changes in θ or block length can collapse your productivity—the floor function is unforgiving.
 
 Once we write your day as a function of these three parameters—λ for how noisy your environment is, Δ for how sticky interruptions are, and θ for how demanding your work is—we can stop treating bad days as vibes and start treating them as a model we can reason about.
 
@@ -266,47 +280,6 @@ Now use the threshold control to toggle θ between 30, 45, and 60 minutes. Watch
 - In the **"good" regime** (green border), the cell stays relatively dark even at θ = 60. High capacity: you can expect multiple 60-minute blocks per day.
 - In the **"typical" regime** (amber border), the cell looks dark at θ = 30, lightens at θ = 45, and nearly washes out at θ = 60. The capacity collapses as θ increases—this is why you feel like you can handle small tasks but never get to the hard problems.
 - In the **"terrible" regime** (red border), the cell is basically washed out at any θ that matters. Near-zero capacity: even 30-minute blocks are rare.
-
-### The Capacity Formula in Action
-
-Remember the capacity formula from earlier? Let's see it work on a concrete example. Suppose you have a day with three focus blocks: 90 minutes, 45 minutes, and 20 minutes. Your total focus time is 155 minutes. But how much _capacity_ do you have—how many units of real work can you complete?
-
-It depends on θ. Watch how the same focus time translates into wildly different capacities:
-
-**For θ = 30 minutes:**
-
-$$
-C(30) = \left\lfloor \frac{90}{30} \right\rfloor
-      + \left\lfloor \frac{45}{30} \right\rfloor
-      + \left\lfloor \frac{20}{30} \right\rfloor
-      = 3 + 1 + 0 = 4
-$$
-
-Four units of work. Not bad.
-
-**For θ = 45 minutes:**
-
-$$
-C(45) = \left\lfloor \frac{90}{45} \right\rfloor
-      + \left\lfloor \frac{45}{45} \right\rfloor
-      + \left\lfloor \frac{20}{45} \right\rfloor
-      = 2 + 1 + 0 = 3
-$$
-
-Three units. The 20-minute block is now too small to count, and the 90-minute block only yields two units instead of three.
-
-**For θ = 60 minutes:**
-
-$$
-C(60) = \left\lfloor \frac{90}{60} \right\rfloor
-      + \left\lfloor \frac{45}{60} \right\rfloor
-      + \left\lfloor \frac{20}{60} \right\rfloor
-      = 1 + 0 + 0 = 1
-$$
-
-One unit. Only the 90-minute block survives. The 45-minute and 20-minute blocks are now useless for this kind of work.
-
-Same 155 minutes of total focus time. But depending on θ, your capacity ranges from 4 down to 1. This is why the heatmap changes so dramatically when you toggle the threshold control—because the floor function is unforgiving. Small changes in θ or in the length of your focus blocks can collapse your capacity.
 
 ## How a Better Day Actually Looks
 
