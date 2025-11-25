@@ -205,19 +205,27 @@ OK, now that we've got our technology working, let's ground things in reality. I
 
 Nothing I've mentioned here is very new. People in both academia and industry have been studying these figures for years. We know, for example, that the rate of interruptions and recovery times vary significantly across industries and even across roles within an industry.
 
-| Job Role                  | Interruptions/Hour | Recovery Time | Sources                                                                                                                                                                                            |
-| ------------------------- | ------------------ | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Knowledge Workers         | 7.5–15             | 10–23 min     | [Iqbal & Horvitz 2007](https://doi.org/10.1145/1240624.1240730), [Baethge & Rigotti 2013](https://doi.org/10.1037/a0031525), [Mark et al.](https://ics.uci.edu/~gmark/chi08-mark.pdf)              |
-| PMs / Heavy Collaborators | ~30 (every 2 min)  | —             | [Microsoft Work Trend Index, 2025](https://www.microsoft.com/en-us/worklab/work-trend-index/2025)                                                                                                  |
-| Software Engineers        | 4–5                | 10–45 min     | [O'Conaill & Frohlich 1995](https://doi.org/10.1145/223904.223941), [Ma et al. 2024](https://doi.org/10.1145/3597503.3639174), [Parnin & Rugaber 2011](https://doi.org/10.1109/VLHCC.2011.6070404) |
+**Interruption Frequency:**
 
-Baethge & Rigotti found that knowledge workers face up to 15 interruptions per hour, meaning λ = 15, or one interruption every four minutes. The Microsoft Work Trend Index reports that heavy collaborators (PMs, team leads) can see 30 interruptions per hour—one every two minutes! Even software engineers, who often have more control over their environment, still face 4–5 interruptions per hour and take 10–45 minutes to fully recover according to Ma et al.
+| Finding                           | Source                                                                                                                              | Method                                     |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| Every 2 minutes during core hours | [Microsoft 2025 Work Trend Index](https://www.microsoft.com/en-us/worklab/work-trend-index/2025-the-year-the-frontier-firm-is-born) | M365 telemetry; top 20% of users by volume |
+| Every 3 min 5 sec activity switch | [González & Mark, CHI 2004](https://dl.acm.org/doi/10.1145/985692.985715)                                                           | Field study shadowing tech workers         |
+| 7.5 alerts/hour (email + IM)      | [Iqbal & Horvitz, CHI 2007](https://dl.acm.org/doi/10.1145/1240624.1240730)                                                         | 27 information workers; 2,267 hours logged |
+
+**Recovery Time:**
+
+| Finding                             | Source                                                                      | Method                     |
+| ----------------------------------- | --------------------------------------------------------------------------- | -------------------------- |
+| 10–16 minutes in resumption phase   | [Iqbal & Horvitz, CHI 2007](https://dl.acm.org/doi/10.1145/1240624.1240730) | After email/IM interruptions |
+
+The research paints a consistent picture. González & Mark found workers switch activities every 3 minutes on average. Iqbal & Horvitz measured 7.5 email/IM alerts per hour, with 10–16 minutes needed to resume work after each. The Microsoft Work Trend Index reports that heavy collaborators see interruptions every 2 minutes—that's λ = 30!
 
 ### What the Research Data Actually Looks Like
 
-If those numbers sound crazy or too high to be real, you are not alone. Look back at the visualizations you've seen so far in this post. We looked at days where λ is between 0 and 4 per hour, and Δ between 5 and 30 minutes. **These are the polite, toned-down versions of reality.** If Baethge & Rigotti see λ = 15 and Microsoft sees λ = 30 for heavy collaborators, our λ = 2–3 examples are actually best-case scenarios for many real environments.
+If those numbers sound crazy or too high to be real, you are not alone. Look back at the visualizations you've seen so far in this post. We looked at days where λ is between 0 and 4 per hour, and Δ between 5 and 30 minutes. **These are the polite, toned-down versions of reality.** If González & Mark see activity switches every 3 minutes and Microsoft sees λ = 30 for heavy collaborators, our λ = 2–3 examples are actually best-case scenarios for many real environments.
 
-Here's 100 days with λ = 15 (the Baethge & Rigotti knowledge worker data—one interruption every four minutes) and Δ = 25 (moderate recovery time):
+Here's 100 days with λ = 15 (roughly matching the González & Mark activity-switching data) and Δ = 25 (moderate recovery time):
 
 <div class="not-prose my-8 w-full">
   <DaysGridEmbed
@@ -250,7 +258,7 @@ But it's not broken. Here's what a single day with these parameters actually loo
 
 Now you can see why the grid appears uniformly gray. There really is no focus time. In fact there's not even any 15-minute block on almost any of the days. The day view is a dense wall of red interruptions, each triggering a gray recovery period. The tiny slivers of focus time are too short to even render at the grid scale. There are no greens, and there's a sole amber and a sole red. When you zoom out to 100 days, every single day looks like this. All dim, no pun intended.
 
-This is the [modern workplace](https://www.apa.org/news/podcasts/speaking-of-psychology/attention-spans). Baethge & Rigotti measured λ = 15 for general knowledge workers. Microsoft reports λ = 30 for heavy collaborators. These researchers are describing millions of people's actual working conditions. And at these parameters, the math is unambiguous: deep work is statistically near-impossible. We've normalized an environment where focus has been engineered out of the workday. No wonder everyone's stressed!
+This is the [modern workplace](https://www.apa.org/news/podcasts/speaking-of-psychology/attention-spans). González & Mark measured activity switches every 3 minutes. Microsoft reports λ = 30 for heavy collaborators. These researchers are describing millions of people's actual working conditions. And at these parameters, the math is unambiguous: deep work is statistically near-impossible. We've normalized an environment where focus has been engineered out of the workday. No wonder everyone's stressed!
 
 Again, for the sake of argument, let's just go back to a "sane" workday. Same 8-hour days, same θ = 60, but now λ = 1.0 (one interruption per hour) and Δ = 10 (10-minute recovery).
 
@@ -320,7 +328,7 @@ OK, so far we've fixed the knobs (λ, Δ, θ) and watched the random outcomes (i
 That's what our heatmap does. The color shows the expected capacity (number of θ-minute blocks per day). Dark purple cells are hospitable to deep work. Light purple cells are hellish; you're lucky to get even one θ-block per day. I've also highlighted some cells, based on the research data above.
 
 - The **"good" world** (green border, λ = 1.0, Δ = 10) is better than most real-world environments. It's closer to a protected morning on a maker's schedule, or a team that's serious about focus time.
-- The **"typical" world** (amber border, λ = 2.0, Δ = 20) is still more generous than the ~15 interruptions/hour Baethge & Rigotti report for general knowledge workers, but it's already rough for 60-minute deep work.
+- The **"typical" world** (amber border, λ = 2.0, Δ = 20) is still more generous than what González & Mark observed (activity switches every 3 minutes), but it's already rough for 60-minute deep work.
 - The **"terrible" world** (red border, λ = 3.0, Δ = 25) is a softened version of the heavy-collaborator world (30 interruptions/hour). The actual PM/team-lead reality often lives off the right edge of this chart.
 
 Now use the threshold control to toggle θ between 30, 45, and 60 minutes. Watch what happens to the three highlighted cells:
@@ -566,7 +574,7 @@ Remember, when you adjust theta (carve out your work), you're not moving on the 
 
 Delta is about **stickiness**. It's how long interruptions linger after they're technically over. You can't make Δ zero, but you can shave minutes off each recovery, and those minutes compound quickly.
 
-Ma et al. report that software engineers take 10–15 minutes to resume work and 30–45 minutes for full context recovery. The variance is huge, and much of it comes from preparedness and task similarity. If you are or your task is on the high end of that delta (Δ ≈ 40), small hygiene improvements can cut that in half.
+Iqbal & Horvitz found that workers take 10–16 minutes to resume work after email/IM interruptions. The variance is huge, and much of it comes from preparedness and task similarity. If you are or your task is on the high end of that delta (Δ ≈ 15+), small hygiene improvements can shave off valuable minutes.
 
 - **Leave yourself breadcrumbs** before switching tasks. When you're interrupted, send yourself a Slack message about what you were doing and what comes next. This sounds quirky, but it works.
 - **Avoid wide context switches.** If you're interrupted while coding, handling a quick code-review question is less disruptive than handling a recruiting question. Minimize cross-domain bouncing when possible.
