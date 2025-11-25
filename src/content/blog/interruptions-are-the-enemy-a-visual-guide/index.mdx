@@ -44,9 +44,9 @@ Let's start by drawing what one of those "lost days" actually looks like. The vi
   />
 </div>
 
-Notice how often the red interruptions land. Notice how much of your 8 hours is actually gray recovery time, not green focus time. Count how many genuine 60-minute blocks you got, just one. You spent the whole day "working," but very little of it was uninterrupted work. Is this a good day?
+Notice how often the red interruptions land. Notice how much of your 8 hours is actually gray recovery time, not green focus time. Count how many genuine 60-minute blocks you got: just one. You spent the whole day "working," but very little of it was uninterrupted work. Is this a good day?
 
-So, how can we begin to understand this day if we want to fix it? In our model, we can boil the day down to 3 numbers that we can try to control.
+So how do we fix this? In our model, we can boil the day down to 3 numbers that we can try to control.
 
 ## Three Knobs That Secretly Define Your Day
 
@@ -58,7 +58,7 @@ So, how can we begin to understand this day if we want to fix it? In our model, 
 
 **λ (lambda): How often the world is allowed to bother you.**
 
-Lambda is your interruption rate, measured in interruptions per hour (modeled as a [Poisson process](https://en.wikipedia.org/wiki/Poisson_point_process)). If λ = 2, that means you're getting interrupted, on average, twice every hour. In the timeline above, lambda determines how many red spikes you see. It's a function of your environment: how many meetings you have, how many Slack channels you're in, how many people feel entitled to "just a quick question," whether your company culture treats every message as urgent. Some people, like managers and executives get interrupted a lot. Some people do not, but then they do, such as when they are on-call or doing triage for their team that week.
+Lambda is your interruption rate, measured in interruptions per hour (modeled as a [Poisson process](https://en.wikipedia.org/wiki/Poisson_point_process)). If λ = 2, that means you're getting interrupted, on average, twice every hour. In the timeline above, lambda determines how many red spikes you see. It's a function of your environment: how many meetings you have, how many Slack channels you're in, how many people feel entitled to "just a quick question," whether your company culture treats every message as urgent. Some people, like managers and executives, get interrupted a lot. Others usually don't—but their λ spikes during on-call rotations or triage weeks.
 
 Most people dramatically underestimate their real λ. But we'll ground this in research in a moment.
 
@@ -164,7 +164,7 @@ So, here's what 100 days look like under relatively harsh conditions: λ = 3.0 (
   />
 </div>
 
-Look at the distribution. Most days are dim, meaning we haven't hit our target. In fact, barely any focus blocks over 30 minutes. A few days are brighter, but they're rare. This is what it feels like when you say "some weeks, I just can't get anything done." You're not imagining it. Given these parameters, the math makes it structurally difficult to have consistent high-capacity days.
+Look at the distribution. Most days are dim, meaning we haven't hit our target. In fact, barely any focus blocks over 30 minutes. A few days are brighter, but they're rare. This is what it feels like when you say "some weeks, I just can't get anything done." Given these parameters, the math makes it structurally difficult to have consistent high-capacity days.
 
 And remember: λ = 3.0 is _generous_ compared to the research. Bailey et al. report λ ≈ 15 for general knowledge workers. Meyer et al. report λ = 4–6 for developers. Even this "typical" grid is more forgiving than many real-world environments.
 
@@ -236,7 +236,7 @@ Moreover, "thanks to" randomness, you have a lot less control over what your day
   />
 </div>
 
-Yet, it's also possible to have a very bad day with a lot of interruptions with the same exact metrics. Note that while you have multiple 45+ minute blocks, you simply can't get a single 60 minute block on this day.
+Yet, it's also possible to have a bad day with the same exact parameters. Note that while you have multiple 45+ minute blocks, you simply can't get a single 60-minute block on this day.
 
 <div class="not-prose my-8 w-full">
   <DayDetailEmbed
@@ -249,6 +249,8 @@ Yet, it's also possible to have a very bad day with a lot of interruptions with 
     client:load
   />
 </div>
+
+You can't eliminate variance—but you can shift the distribution. In a good regime, great days become the norm and bad days become the exception you can absorb.
 
 ## The Map of Deep Work
 
@@ -424,7 +426,7 @@ Remember, when you adjust theta, you're not moving on the map. You're _choosing 
 
 This stuff is hard. And of course, like [any other model](https://en.wikipedia.org/wiki/All_models_are_wrong), this model of a work day is wrong. You simply cannot [reverse Taylorism](https://en.wikipedia.org/wiki/Scientific_management) your way out of a crazy calendar by inventing theta and putting "focus blocks" on a calendar.
 
-However, [knowing is truly half the battle](https://tvtropes.org/pmwiki/pmwiki.php/Main/AndKnowingIsHalfTheBattle). And I truly believe that like in any endeavor, the most important thing is to believe that we can win the battle. So know this: **You're not uniquely undisciplined. You're operating in a system where, given your λ and Δ, deep work is mathematically rare unless you deliberately design for it.**
+However, [knowing is truly half the battle](https://tvtropes.org/pmwiki/pmwiki.php/Main/AndKnowingIsHalfTheBattle). And I truly believe that like in any endeavor, the most important thing is to believe that we can win the battle. So know this: **Given your λ and Δ, deep work is mathematically rare unless you deliberately design for it.**
 
 The good news is that you have levers. You can harden your notifications, batch your meetings, leave yourself breadcrumbs, defend specific hours, and match your task granularity to your realistic environment. Even small movements on the map—dropping λ from 3 to 2, or Δ from 25 to 15—can transform your distribution of days.
 
