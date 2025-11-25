@@ -5,7 +5,7 @@ date: 2025-11-24
 tags: ['programming', 'tech-industry', 'engineering-management']
 ogImage: './og-image.png'
 authors: ['cduruk']
-draft: true
+draft: false
 ---
 
 import Callout from '@/components/Callout.astro'
@@ -71,11 +71,13 @@ Let's walk through them.
 
 ### λ (lambda): Interruptions
 
-Lambda (λ) is your interruption rate, measured in interruptions per hour (modeled as a [Poisson process](https://en.wikipedia.org/wiki/Poisson_point_process)). If λ = 2, you're getting interrupted, on average, twice every hour. In the timeline above, lambda determines how many red spikes you see. It's a function of your environment: how many meetings you have, how many Slack channels you're in, how many people feel entitled to "just a quick question," whether your company culture treats every message as urgent. Some people, like managers and executives, get interrupted a lot. Others usually don't, but their λ can spike during on-call rotations or triage weeks. We try to model that by randomness.
+Lambda (λ) is your interruption rate, measured in interruptions per hour (modeled as a [Poisson process](https://en.wikipedia.org/wiki/Poisson_point_process)). If λ = 2, you're getting interrupted, on average, twice every hour. In the timeline above, lambda determines how many red spikes you see. 
+
+It's a function of your environment: how many meetings you have, how many Slack channels you're in, how many people feel entitled to "just a quick question," whether your company culture treats every message as urgent. Some people, like managers and executives, get interrupted a lot. Others usually don't, but their λ can spike during on-call rotations or triage weeks. We try to model that by randomness.
 
 Most people dramatically underestimate their real λ, but we'll get to that in a moment.
 
-<Callout variant="note" title="On Poisson distribtuions">
+<Callout variant="note" title="On Poisson distributions">
   Our simulations model interruptions as a Poisson process, which assumes they
   arrive randomly and uniformly throughout the day. In reality, interruptions
   tend to cluster. Think back-to-back meetings, Slack storms after a big
@@ -161,7 +163,43 @@ Same 155 minutes, yet the capacity slides all the way down from 4 to 1. This is 
 
 Once we write your day as a function of these three parameters—λ for how noisy your environment is, Δ for how sticky interruptions are, and θ for how demanding your work is—we can stop treating bad days as _vibes_ and start treating them as a model we can reason about.
 
-Let's ground this model in reality and research.
+## 100 Days Under the Same Conditions
+
+So far, we've only looked at a single day, but one day can be a fluke—maybe you got lucky, or maybe you got unlucky. What happens if we simulate 100 days with the same λ, Δ, and θ?
+
+Luckily, computers make simulating many days trivial. Let's extend our model to actually simulate 100 days in a row and see all the visualizations together. 
+
+<div class="not-prose my-8 w-full">
+  <DaysGridEmbed
+    lambda={2.0}
+    delta={20}
+    len={45}
+    target={2}
+    seed={42}
+    showOverlay={false}
+    client:load
+  />
+</div>
+
+On the grid above, each cell is one simulated 8-hour workday. The color encodes the longest continuous focus block you got that day. Darker, richer colors mean longer focus blocks—those are the high-capacity days. Dim, washed-out cells are the low-capacity days, where you never got more than 15–30 minutes of uninterrupted time.
+
+The above simulation was when things were cheery. But how when things go sideways?
+
+<div class="not-prose my-8 w-full">
+  <DaysGridEmbed
+    lambda={3.0}
+    delta={20}
+    len={60}
+    target={2}
+    seed={42}
+    showOverlay={false}
+    client:load
+  />
+</div>
+
+That above is what 100 days look like under relatively harsh conditions: λ = 3.0 (three interruptions per hour), Δ = 20 (20-minute recovery), θ = 60 (you need 60-minute blocks to count as "real work"):
+
+OK, now that we've got our technology working, let's ground things in reality. It's time to dig into some research to feed our model some real λ and Δ.
 
 ## What λ and Δ Look Like in Real Jobs
 
@@ -178,46 +216,6 @@ Here's a very quick, ChatGPT-derived version of the latest research:
 Bailey et al. found that knowledge workers face around 15 interruptions per hour, meaning λ = 15, or one interruption every four minutes. The Microsoft Work Trend Index reports that heavy collaborators (PMs, team leads) can see 30 interruptions per hour. That's λ = 30, or one every two minutes! Even software developers, who often have more control over their environment, still face 4–6 interruptions per hour and take 10–45 minutes to fully recover.
 
 If those numbers sound crazy or too high to be real, you are not alone. Look back at the visualizations you've seen in this post. So far, we've focused on days where λ is between 0 and 4 per hour, and Δ between 5 and 30 minutes. **These are the polite, toned-down versions of reality.** If Bailey et al. see λ = 15 and Microsoft sees λ = 30 for heavy collaborators, our λ = 2–3 examples are actually best-case scenarios for many real environments.
-
-## 100 Days Under the Same Conditions
-
-So far, we've only looked at a single day, but one day can be a fluke—maybe you got lucky, or maybe you got unlucky. What happens if we simulate 100 days with the same λ, Δ, and θ?
-
-Luckily, computers make simulating many days trivial.
-
-<div class="not-prose my-8 w-full">
-  <DaysGridEmbed
-    lambda={2.0}
-    delta={20}
-    len={45}
-    target={2}
-    seed={42}
-    showOverlay={false}
-    client:load
-  />
-</div>
-
-On the grid above, each cell is one simulated 8-hour workday. The color encodes the longest continuous focus block you got that day. Darker, richer colors mean longer focus blocks—those are the high-capacity days. Dim, washed-out cells are the low-capacity days, where you never got more than 15–30 minutes of uninterrupted time.
-
-How about when things get bad?
-
-<div class="not-prose my-8 w-full">
-  <DaysGridEmbed
-    lambda={3.0}
-    delta={20}
-    len={60}
-    target={2}
-    seed={42}
-    showOverlay={false}
-    client:load
-  />
-</div>
-
-That above is what 100 days look like under relatively harsh conditions: λ = 3.0 (three interruptions per hour), Δ = 20 (20-minute recovery), θ = 60 (you need 60-minute blocks to count as "real work"):
-
-Look at the distribution and try not to cry. This is what it feels like when you say "some weeks, I just can't get anything done." Most days are dim, meaning we haven't hit our target (enough focus blocks to hit our theta target). In fact, there are barely any focus blocks over 30 minutes. A few days are brighter, but they're rare. Given these parameters, the math makes it structurally difficult to have consistent high-capacity days.
-
-And remember: λ = 3.0 is _generous_ compared to the research. Bailey et al. report λ ≈ 15 for general knowledge workers. Meyer et al. report λ = 4–6 for developers. Even this "typical" grid is more forgiving than many real-world environments.
 
 ### What the Research Data Actually Looks Like
 
@@ -308,9 +306,7 @@ You can't eliminate variance, unfortunately, but you can shift the distribution.
 
 ## The Map of Deep Work
 
-So far we've fixed the knobs (λ, Δ, θ) and watched the random outcomes (individual days, grids of 100 days).
-
-Now let's see what happens when we actually turn those knobs—when we vary λ and Δ systematically and measure the result.
+So far we've fixed the knobs (λ, Δ, θ) and watched the random outcomes (individual days, grids of 100 days). Let's extend our model to actually a lot of potential parameters at once. We want to bee able to vary λ and Δ systematically and measure the resulting capacity for a given θ.
 
 <div class="not-prose my-8 w-full">
   <FocusBlocksHeatmapEmbed
@@ -533,7 +529,36 @@ Beyond the mathematical advantage, there's a psychological one: finishing a task
 
 If you can defend a 2-hour window early in the morning with λ ≈ 0, that's where you do your θ = 60–90 work. Use the rest of your day (higher λ) for smaller tasks that tolerate fragmentation.
 
-Remember, this is not the same as "lowering your λ" but instead realizing that certain times of day (or week) are have predictable interrupt patterns. You can't always get what you want, but you might get what you need, if your theta is right for the time. Say, if you're a PM or team lead living at λ = 20, starting a θ = 60 project at 3pm is fantasy. It's extremely unlikely you'll get a 60-minute block ever with a lambda like that but it's practically impossible that you'll get one that late in the day. 
+<div class="not-prose my-8 flex w-full flex-col gap-4 md:flex-row">
+  <div class="flex-1">
+    <p class="mb-2 text-center font-semibold">θ = 20 minutes</p>
+    <FocusBlocksHeatmapEmbed
+      threshold={20}
+      showThresholdControl={false}
+      highlightedCells={[
+        { lambda: 1.0, delta: 10, color: '#22c55e' },
+        { lambda: 2.0, delta: 20, color: '#f59e0b' },
+        { lambda: 3.0, delta: 25, color: '#ef4444' },
+      ]}
+      client:load
+    />
+  </div>
+  <div class="flex-1">
+    <p class="mb-2 text-center font-semibold">θ = 90 minutes</p>
+    <FocusBlocksHeatmapEmbed
+      threshold={90}
+      showThresholdControl={false}
+      highlightedCells={[
+        { lambda: 1.0, delta: 10, color: '#22c55e' },
+        { lambda: 2.0, delta: 20, color: '#f59e0b' },
+        { lambda: 3.0, delta: 25, color: '#ef4444' },
+      ]}
+      client:load
+    />
+  </div>
+</div>
+
+Remember, this is not the same as "lowering your λ" but instead realizing that certain times of day (or week) are have predictable interrupt patterns. You can't always get what you want, but you might get what you need, if your theta is right for the time. Say, if you're a PM or team lead living at λ = 20, starting a θ = 60 project at 3pm is fantasy. It's extremely unlikely you'll get a 60-minute block ever with a lambda like that but it's practically impossible that you'll get one that late in the day.
 
 You need to either carve out radically different conditions or accept that this kind of work simply doesn't happen in your normal day. I don't want to get into the 996 discourse right now but there is a reason you see so many managers work early in the mornings before others, or on Sunday nights.
 
