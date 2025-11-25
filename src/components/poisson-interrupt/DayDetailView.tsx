@@ -21,6 +21,7 @@ interface DayDetailViewProps {
   lambda?: number
   delta?: number
   showNavigation?: boolean
+  showBackButton?: boolean
 }
 
 const ChartLegend = ({
@@ -80,7 +81,10 @@ export const DayDetailView: React.FC<DayDetailViewProps> = ({
   lambda,
   delta,
   showNavigation = true,
+  showBackButton,
 }) => {
+  // Default showBackButton to showNavigation if not explicitly set
+  const displayBackButton = showBackButton ?? showNavigation
   // Scales for detail view
   const VIEW_WIDTH = SVG_WIDTH
   const VIEW_HEIGHT = 200
@@ -125,7 +129,7 @@ export const DayDetailView: React.FC<DayDetailViewProps> = ({
           className="hidden w-full flex-col items-center gap-3 sm:flex"
           style={desktopContainerStyle}
         >
-          {showNavigation && (
+          {displayBackButton && (
             <Button
               variant="ghost"
               onClick={onBack}
@@ -170,7 +174,7 @@ export const DayDetailView: React.FC<DayDetailViewProps> = ({
 
         {/* Mobile View */}
         <div className="flex w-full flex-col gap-3 px-4 sm:hidden">
-          {showNavigation && (
+          {displayBackButton && (
             <Button
               variant="ghost"
               onClick={onBack}
