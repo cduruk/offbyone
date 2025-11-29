@@ -387,6 +387,10 @@ const { headings } = Astro.props
     }
   }
 
+  // Initialize immediately (works without view transitions)
+  MobileTOCController.init()
+
+  // Keep for future view transitions support
   document.addEventListener('astro:page-load', () => MobileTOCController.init())
   document.addEventListener('astro:after-swap', () => {
     MobileTOCController.cleanup()
