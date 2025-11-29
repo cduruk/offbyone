@@ -362,6 +362,10 @@ const parentId = isCurrentSubpost ? getParentId(currentPostId) : currentPostId
     }
   }
 
+  // Initialize immediately (works without view transitions)
+  TOCController.init()
+
+  // Keep for future view transitions support
   document.addEventListener('astro:page-load', () => TOCController.init())
   document.addEventListener('astro:after-swap', () => {
     TOCController.cleanup()

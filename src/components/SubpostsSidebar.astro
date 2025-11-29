@@ -259,6 +259,10 @@ const subpostsWithReadingTime = await Promise.all(
     }
   }
 
+  // Initialize immediately (works without view transitions)
+  SidebarController.init()
+
+  // Keep for future view transitions support
   document.addEventListener('astro:page-load', () => SidebarController.init())
   document.addEventListener('astro:after-swap', () => {
     SidebarController.cleanup()

@@ -303,6 +303,10 @@ const currentSubpostDetails = isCurrentSubpost
     }
   }
 
+  // Initialize immediately (works without view transitions)
+  SubpostsController.init()
+
+  // Keep for future view transitions support
   document.addEventListener('astro:page-load', () => SubpostsController.init())
   document.addEventListener('astro:after-swap', () => {
     SubpostsController.cleanup()
