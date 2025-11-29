@@ -160,6 +160,7 @@ const parentId = isCurrentSubpost ? getParentId(currentPostId) : currentPostId
     regions: { id: string; start: number; end: number }[] = []
     scrollArea: HTMLElement | null = null
     tocScrollArea: HTMLElement | null = null
+    initialized = false
 
     reset() {
       this.links = document.querySelectorAll(
@@ -326,6 +327,9 @@ const parentId = isCurrentSubpost ? getParentId(currentPostId) : currentPostId
     }
 
     static init() {
+      if (state.initialized) return
+      state.initialized = true
+
       state.reset()
       HeadingRegions.build()
 
@@ -358,6 +362,7 @@ const parentId = isCurrentSubpost ? getParentId(currentPostId) : currentPostId
         regions: [],
         scrollArea: null,
         tocScrollArea: null,
+        initialized: false,
       })
     }
   }
