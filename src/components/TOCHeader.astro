@@ -108,6 +108,7 @@ const { headings } = Astro.props
     headings: HTMLElement[] = []
     regions: { id: string; start: number; end: number }[] = []
     activeIds: string[] = []
+    initialized = false
 
     reset() {
       this.progressCircle = document.getElementById(
@@ -354,6 +355,9 @@ const { headings } = Astro.props
     }
 
     static init() {
+      if (state.initialized) return
+      state.initialized = true
+
       state.reset()
       HeadingRegions.build()
 
@@ -384,6 +388,7 @@ const { headings } = Astro.props
       state.activeIds = []
       state.headings = []
       state.regions = []
+      state.initialized = false
     }
   }
 

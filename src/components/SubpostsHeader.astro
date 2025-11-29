@@ -196,6 +196,7 @@ const currentSubpostDetails = isCurrentSubpost
     scrollArea: HTMLElement | null = null
     detailsElement: HTMLDetailsElement | null = null
     headerScrollArea: HTMLElement | null = null
+    initialized = false
 
     reset() {
       this.scrollArea = null
@@ -288,6 +289,9 @@ const currentSubpostDetails = isCurrentSubpost
 
   class SubpostsController {
     static init() {
+      if (state.initialized) return
+      state.initialized = true
+
       state.reset()
       SubpostsScroll.setupInteraction()
     }
@@ -300,6 +304,7 @@ const currentSubpostDetails = isCurrentSubpost
         )
       }
       state.reset()
+      state.initialized = false
     }
   }
 

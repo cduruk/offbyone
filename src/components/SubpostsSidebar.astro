@@ -169,6 +169,7 @@ const subpostsWithReadingTime = await Promise.all(
   class SidebarState {
     scrollArea: HTMLElement | null = null
     sidebarScrollArea: HTMLElement | null = null
+    initialized = false
 
     reset() {
       this.scrollArea = null
@@ -223,6 +224,9 @@ const subpostsWithReadingTime = await Promise.all(
 
   class SidebarController {
     static init() {
+      if (state.initialized) return
+      state.initialized = true
+
       state.reset()
 
       const sidebarContainer = document.getElementById(
@@ -256,6 +260,7 @@ const subpostsWithReadingTime = await Promise.all(
         state.scrollArea.removeEventListener('scroll', SidebarScrollMask.update)
       }
       state.reset()
+      state.initialized = false
     }
   }
 
