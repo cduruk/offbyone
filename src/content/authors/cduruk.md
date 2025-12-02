@@ -1,7 +1,7 @@
 ---
 name: 'Can Duruk'
 avatar: '/avatar.webp'
-bio: 'Former CTO at Felt'
+bio: 'Product Engineering at Modal, Former CTO at Felt'
 about: '/about/'
 website: 'https://justoffbyone.com'
 twitter: 'https://x.com/can'
